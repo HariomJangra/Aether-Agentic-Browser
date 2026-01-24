@@ -1,0 +1,9 @@
+namespace Agentic_Browser
+{
+    [default_interface]
+    runtimeclass BrowserView : Microsoft.UI.Xaml.Controls.Page
+    {
+        BrowserView();
+        Int32 MyProperty;
+    }
+}

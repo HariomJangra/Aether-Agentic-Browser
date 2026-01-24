@@ -4,7 +4,7 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Agentic Browser.vcxproj">
+  <Project Path="Agentic Browser.vcxproj" Id="e490c382-8b3e-49da-aedf-f2eac3b48855">
     <Deploy />
   </Project>
 </Solution>
