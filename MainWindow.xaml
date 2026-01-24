@@ -9,17 +9,13 @@
     mc:Ignorable="d"
     Title="Agentic Browser">
 
-    <TabView VerticalAlignment="Stretch"
+    <TabView x:Name="Tabs"
+             VerticalAlignment="Stretch"
              AddTabButtonClick="TabView_AddTabButtonClick"
              TabCloseRequested="TabView_TabCloseRequested"
              CanReorderTabs="True"
              CanDragTabs="True">
         
-        <TabViewItem Header="New Tab" IsClosable="True">
-            <TabViewItem.IconSource>
-                <SymbolIconSource Symbol="Home"/>
-            </TabViewItem.IconSource>
-        </TabViewItem>
         
         <TabView.TabStripFooter>
             <Grid x:Name="DragRegion" Background="Transparent" MinWidth="180"/>

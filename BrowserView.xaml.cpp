@@ -12,13 +12,5 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::Agentic_Browser::implementation
 {
-    int32_t BrowserView::MyProperty()
-    {
-        throw hresult_not_implemented();
-    }
-
-    void BrowserView::MyProperty(int32_t /* value */)
-    {
-        throw hresult_not_implemented();
-    }
+    
 }

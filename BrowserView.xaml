@@ -9,6 +9,6 @@
     mc:Ignorable="d">
 
     <Grid>
-        <TextBlock Name="Hello"/>
+        <WebView2 Source="https://www.google.com"/>
     </Grid>
 </Page>

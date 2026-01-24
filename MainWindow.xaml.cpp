@@ -3,7 +3,6 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
-#include "App.xaml.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -20,6 +19,9 @@ namespace winrt::Agentic_Browser::implementation
         //Title Bar Customization
         ExtendsContentIntoTitleBar(true);
         SetTitleBar(DragRegion());
+        
+        // Creating Initial Tab
+        CreateNewTab();
     }
 
     // Add New Tab Functionality
@@ -27,13 +29,7 @@ namespace winrt::Agentic_Browser::implementation
         Microsoft::UI::Xaml::Controls::TabView const& sender,
         winrt::Windows::Foundation::IInspectable const&)
     {
-        using namespace Microsoft::UI::Xaml::Controls;
-
-        auto tab = TabViewItem{};
-        tab.Header(box_value(L"New Tab"));
-
-        sender.TabItems().Append(tab);
-        sender.SelectedItem(tab);
+        CreateNewTab();
     }
 
 
@@ -54,4 +50,19 @@ namespace winrt::Agentic_Browser::implementation
             this->Close();   
         }
     }
+
+    void MainWindow::CreateNewTab()
+    {
+        using namespace Microsoft::UI::Xaml::Controls;
+
+        auto tab = TabViewItem{};
+
+        // Temporary placeholder — later this comes from WebView2
+        tab.Header(box_value(L"New Tab"));
+        tab.Content(winrt::Agentic_Browser::BrowserView{});
+
+        Tabs().TabItems().Append(tab);
+        Tabs().SelectedItem(tab);
+    }
+
 }
