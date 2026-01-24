@@ -1,0 +1,8 @@
+namespace Agentic_Browser
+{
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    {
+        MainWindow();
+    }
+}
