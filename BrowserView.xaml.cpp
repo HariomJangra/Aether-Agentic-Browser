@@ -43,15 +43,16 @@ namespace winrt::Agentic_Browser::implementation
 
         WebView().EnsureCoreWebView2Async();
 
-        // 3. Comet-style Focus Handlers
+        // 3. UrlBox focus behavior
         UrlBox().GettingFocus([weak_this = get_weak()](auto const&, auto const&)
             {
                 if (auto strong_this = weak_this.get())
                 {
                     if (strong_this->WebView().CoreWebView2())
                     {
-                        // Switch to full URL for editing
-                        strong_this->UrlBox().Text(strong_this->WebView().Source().AbsoluteUri());
+                        strong_this->UrlBox().Text(
+                            strong_this->WebView().Source().AbsoluteUri()
+                        );
                         strong_this->UrlBox().SelectAll();
                     }
                 }
@@ -64,6 +65,16 @@ namespace winrt::Agentic_Browser::implementation
                     strong_this->UpdateUrlBarFromWebView();
                 }
             });
+
+        // 4. FIX: clicking anywhere outside forces focus away
+        this->PointerPressed([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    strong_this->WebView().Focus(FocusState::Programmatic);
+                    strong_this->UpdateUrlBarFromWebView();
+                }
+            });
     }
 
     void BrowserView::UpdateUrlBarFromWebView()
@@ -73,39 +84,27 @@ namespace winrt::Agentic_Browser::implementation
 
         try
         {
-            // Check focus state so we don't overwrite the URL while the user is typing
-            bool isFocused = (UrlBox().FocusState() != Microsoft::UI::Xaml::FocusState::Unfocused);
+            auto uri = WebView().Source();
+            winrt::hstring host = uri.Host();
+            winrt::hstring title = core.DocumentTitle();
 
-            if (!isFocused)
+            std::wstring hostStr{ host };
+            if (hostStr.starts_with(L"www.")) hostStr.erase(0, 4);
+
+            std::wstring titleStr{ title };
+            std::transform(titleStr.begin(), titleStr.end(), titleStr.begin(), ::tolower);
+
+            std::wstring cleanHost = hostStr;
+            if (auto dot = cleanHost.find_last_of(L'.'); dot != std::wstring::npos)
+                cleanHost = cleanHost.substr(0, dot);
+
+            if (!title.empty() && titleStr != hostStr && titleStr != cleanHost)
             {
-                auto uri = WebView().Source();
-                winrt::hstring host = uri.Host();
-                winrt::hstring title = core.DocumentTitle();
-
-                // 1. Clean up host (remove 'www.')
-                std::wstring hostStr{ host };
-                if (hostStr.find(L"www.") == 0) hostStr.erase(0, 4);
-
-                // 2. Logic to prevent "youtube.com / YouTube"
-                // We convert to lowercase to compare properly
-                std::wstring titleStr{ title };
-                std::transform(titleStr.begin(), titleStr.end(), titleStr.begin(), ::tolower);
-
-                std::wstring cleanHost = hostStr;
-                // Remove the TLD (.com, .org) for a cleaner comparison
-                size_t lastDot = cleanHost.find_last_of(L'.');
-                if (lastDot != std::wstring::npos) cleanHost = cleanHost.substr(0, lastDot);
-
-                // 3. Only add the title if it's NOT just repeating the domain name
-                if (!title.empty() && titleStr != hostStr && titleStr != cleanHost)
-                {
-                    UrlBox().Text(winrt::hstring(hostStr) + L" / " + title);
-                }
-                else
-                {
-                    // If they are the same, just show the domain (youtube.com)
-                    UrlBox().Text(winrt::hstring(hostStr));
-                }
+                UrlBox().Text(winrt::hstring(hostStr) + L" / " + title);
+            }
+            else
+            {
+                UrlBox().Text(winrt::hstring(hostStr));
             }
         }
         catch (...) {}
@@ -116,36 +115,47 @@ namespace winrt::Agentic_Browser::implementation
         auto core = WebView().CoreWebView2();
         if (!core) return;
 
-        core.SourceChanged([weak_this = get_weak()](auto&&, auto&&) {
-            if (auto strong_this = weak_this.get()) {
-                strong_this->UpdateUrlBarFromWebView();
-            }
-            });
-
-        core.DocumentTitleChanged([weak_this = get_weak()](auto const& sender, auto const&) {
-            if (auto strong_this = weak_this.get()) {
-                strong_this->UpdateUrlBarFromWebView();
-                strong_this->m_titleChangedEvent(*strong_this, sender.DocumentTitle());
-            }
-            });
-
-        core.FaviconChanged([weak_this = get_weak()](auto const& sender, auto const&) {
-            if (auto strong_this = weak_this.get()) {
-                winrt::hstring uri = sender.FaviconUri();
-                if (!uri.empty()) {
-                    auto bitmap = winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage(winrt::Windows::Foundation::Uri(uri));
-                    strong_this->FaviconImage().Source(bitmap);
-                    strong_this->m_faviconChangedEvent(*strong_this, uri);
+        core.SourceChanged([weak_this = get_weak()](auto&&, auto&&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    strong_this->UpdateUrlBarFromWebView();
                 }
-            }
+            });
+
+        core.DocumentTitleChanged([weak_this = get_weak()](auto const& sender, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    strong_this->UpdateUrlBarFromWebView();
+                    strong_this->m_titleChangedEvent(*strong_this, sender.DocumentTitle());
+                }
+            });
+
+        core.FaviconChanged([weak_this = get_weak()](auto const& sender, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    winrt::hstring uri = sender.FaviconUri();
+                    if (!uri.empty())
+                    {
+                        auto bitmap = winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage(
+                            winrt::Windows::Foundation::Uri(uri)
+                        );
+                        strong_this->FaviconImage().Source(bitmap);
+                        strong_this->m_faviconChangedEvent(*strong_this, uri);
+                    }
+                }
             });
     }
 
-    // Include your NavigateTo, NormalizeUrl, and SetInitialUrl here as they were
     void BrowserView::NavigateTo(winrt::hstring const& url)
     {
         auto normalized = NormalizeUrl(url);
-        try { WebView().Source(winrt::Windows::Foundation::Uri{ normalized }); }
+        try
+        {
+            WebView().Source(winrt::Windows::Foundation::Uri{ normalized });
+        }
         catch (...) {}
     }
 
@@ -153,10 +163,16 @@ namespace winrt::Agentic_Browser::implementation
     {
         std::wstring text{ input };
         text.erase(0, text.find_first_not_of(L" \t"));
-        if (auto last = text.find_last_not_of(L" \t"); last != std::wstring::npos) text.erase(last + 1);
+        if (auto last = text.find_last_not_of(L" \t"); last != std::wstring::npos)
+            text.erase(last + 1);
+
         if (text.empty()) return L"about:blank";
-        if (text.starts_with(L"http://") || text.starts_with(L"https://") || text.starts_with(L"about:")) return winrt::hstring{ text };
-        if (text.find(L'.') != std::wstring::npos && text.find(L' ') == std::wstring::npos) return winrt::hstring{ L"https://" + text };
+        if (text.starts_with(L"http://") || text.starts_with(L"https://") || text.starts_with(L"about:"))
+            return winrt::hstring{ text };
+
+        if (text.find(L'.') != std::wstring::npos && text.find(L' ') == std::wstring::npos)
+            return winrt::hstring{ L"https://" + text };
+
         return winrt::hstring{ L"https://www.google.com/search?q=" + text };
     }
 }
