@@ -7,6 +7,8 @@
 #include <winrt/Microsoft.UI.Xaml.Input.h>
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
+#include <winrt/Windows.Storage.Streams.h>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -18,7 +20,6 @@ namespace winrt::Agentic_Browser::implementation
         InitializeComponent();
 
         // 1. URL Box Input Handler
-        // optimization: Used weak_ref to prevent crashes if the view is closed while processing.
         UrlBox().KeyDown([weak_this = get_weak(), this](IInspectable const&, Input::KeyRoutedEventArgs const& args)
             {
                 if (auto strong_this = weak_this.get())
@@ -41,7 +42,7 @@ namespace winrt::Agentic_Browser::implementation
                 }
             });
 
-        // Ensure the backing WebView2 process is initialized explicitly (optional but good practice)
+        // Ensure the backing WebView2 process is initialized explicitly
         WebView().EnsureCoreWebView2Async();
     }
 
@@ -67,7 +68,7 @@ namespace winrt::Agentic_Browser::implementation
         if (text.find(L'.') != std::wstring::npos && text.find(L' ') == std::wstring::npos)
             return winrt::hstring{ L"https://" + text };
 
-        // Otherwise treat as search query
+        // Otherwise treating it as a search query
         return winrt::hstring{ L"https://www.google.com/search?q=" + text };
     }
 
@@ -89,8 +90,6 @@ namespace winrt::Agentic_Browser::implementation
         }
     }
 
-    // Keep this only if it is defined in your BrowserView.idl file. 
-    // If not in IDL, you can remove this method entirely.
     void BrowserView::SetInitialUrl(winrt::hstring const& url)
     {
         NavigateTo(url);
@@ -126,17 +125,34 @@ namespace winrt::Agentic_Browser::implementation
         auto core = WebView().CoreWebView2();
         if (!core) return;
 
-        // OPTIMIZATION: 'SourceChanged' covers both:
-        // 1. Traditional Navigation (Page Loads)
-        // 2. SPA Navigation (React/YouTube history API changes)
-        // We do not need NavigationCompleted or HistoryChanged anymore.
-        core.SourceChanged(
-            [weak_this = get_weak(), this](auto&&, auto&&)
-            {
-                if (auto strong_this = weak_this.get())
-                {
-                    UpdateUrlBarFromWebView();
+        // 1. Handle URL bar updates
+        core.SourceChanged([weak_this = get_weak()](auto&&, auto&&) {
+            if (auto strong_this = weak_this.get()) {
+                strong_this->UpdateUrlBarFromWebView();
+            }
+            });
+
+        // 2. Handle Title
+        core.DocumentTitleChanged([weak_this = get_weak()](auto const& sender, auto const&) {
+            if (auto strong_this = weak_this.get()) {
+                // Fire event with the string title
+                strong_this->m_titleChangedEvent(*strong_this, sender.DocumentTitle());
+            }
+            });
+
+        // 3. Handle Favicon (Back to URI method for clarity)
+        core.FaviconChanged([weak_this = get_weak()](auto const& sender, auto const&) {
+            if (auto strong_this = weak_this.get()) {
+                winrt::hstring uri = sender.FaviconUri();
+                if (!uri.empty()) {
+                    // Update local URL bar icon
+                    auto bitmap = winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage(winrt::Windows::Foundation::Uri(uri));
+                    strong_this->FaviconImage().Source(bitmap);
+
+                    // Fire event with the URI string
+                    strong_this->m_faviconChangedEvent(*strong_this, uri);
                 }
+            }
             });
     }
 }

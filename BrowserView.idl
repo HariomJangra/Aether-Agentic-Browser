@@ -4,6 +4,9 @@ namespace Agentic_Browser
     runtimeclass BrowserView : Microsoft.UI.Xaml.Controls.Page
     {
         BrowserView();
+
+        event Windows.Foundation.TypedEventHandler<BrowserView, String> TitleChanged;
+        event Windows.Foundation.TypedEventHandler<BrowserView, String> FaviconChanged;
         
     }
 }

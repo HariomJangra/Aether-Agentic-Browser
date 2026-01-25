@@ -3,6 +3,7 @@
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
 #endif
+#include "BrowserView.xaml.h"
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -54,21 +55,39 @@ namespace winrt::Agentic_Browser::implementation
     void MainWindow::CreateNewTab()
     {
         using namespace Microsoft::UI::Xaml::Controls;
+        using namespace Microsoft::UI::Xaml::Media;
 
+        // 1. Create the Tab and the BrowserView component
         auto tab = TabViewItem{};
+        auto browserView = winrt::Agentic_Browser::BrowserView{};
 
-        // Temporary placeholder — later this comes from WebView2
-        tab.Header(box_value(L"New Tab"));
-        tab.Content(winrt::Agentic_Browser::BrowserView{});
+        // 2. Set initial state
+        tab.Header(winrt::box_value(L"New Tab"));
+        tab.Content(browserView);
 
+        // 3. Hook the TitleChanged event to update the Tab Header
+        browserView.TitleChanged([tab](auto const&, winrt::hstring const& newTitle)
+            {
+                tab.Header(winrt::box_value(newTitle));
+            });
+
+        // 4. Hook the FaviconChanged event to update the Tab Icon
+        browserView.FaviconChanged([tab](auto const&, winrt::hstring const& uri)
+            {
+                auto bitmapIcon = winrt::Microsoft::UI::Xaml::Controls::BitmapIconSource();
+ 
+                bitmapIcon.UriSource(winrt::Windows::Foundation::Uri(uri));
+                bitmapIcon.ShowAsMonochrome(false);
+
+                tab.IconSource(bitmapIcon);
+            });
+
+        // 5. Add to the TabView and select it
         Tabs().TabItems().Append(tab);
         Tabs().SelectedItem(tab);
 
-        /*auto browserView = winrt::Agentic_Browser::BrowserView{};
-        browserView.SetInitialUrl(L"https://www.google.com");
-
-        tab.Content(browserView);*/
-
+        // Optional: Set an initial URL if you have that method enabled
+        // browserView.NavigateTo(L"https://www.google.com");
     }
 
 }
