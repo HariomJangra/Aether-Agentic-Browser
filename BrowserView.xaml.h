@@ -9,7 +9,6 @@ namespace winrt::Agentic_Browser::implementation
         BrowserView();
 
         void NavigateTo(winrt::hstring const& url);
-        void SetInitialUrl(winrt::hstring const& url);
 
         // --- Event Registrations ---
         winrt::event_token TitleChanged(Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring> const& handler) { return m_titleChangedEvent.add(handler); }
@@ -17,6 +16,9 @@ namespace winrt::Agentic_Browser::implementation
 
         winrt::event_token FaviconChanged(Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring> const& handler) { return m_faviconChangedEvent.add(handler); }
         void FaviconChanged(winrt::event_token const& token) noexcept { m_faviconChangedEvent.remove(token); }
+
+        winrt::event_token NewTabRequested(Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring> const& handler){ return m_newTabRequestedEvent.add(handler); }
+        void NewTabRequested(winrt::event_token const& token) noexcept { m_newTabRequestedEvent.remove(token); }
 
     private:
         winrt::hstring NormalizeUrl(winrt::hstring const& input);
@@ -26,6 +28,7 @@ namespace winrt::Agentic_Browser::implementation
         // --- Event Backing Fields ---
         winrt::event<Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring>> m_titleChangedEvent;
         winrt::event<Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring>> m_faviconChangedEvent;
+        winrt::event<Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView,winrt::hstring>> m_newTabRequestedEvent;
     };
 }
 

@@ -147,6 +147,24 @@ namespace winrt::Agentic_Browser::implementation
                     }
                 }
             });
+        core.NewWindowRequested(
+            [weak_this = get_weak()](
+                auto const&,
+                Microsoft::Web::WebView2::Core::CoreWebView2NewWindowRequestedEventArgs const& args)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    // Stop WebView2 from creating a new OS window
+                    args.Handled(true);
+
+                    // Fire our BrowserView event
+                    strong_this->m_newTabRequestedEvent(
+                        *strong_this,
+                        args.Uri()
+                    );
+                }
+            });
+
     }
 
     void BrowserView::NavigateTo(winrt::hstring const& url)

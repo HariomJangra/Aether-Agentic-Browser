@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "MainWindow.xaml.h"
 #if __has_include("MainWindow.g.cpp")
 #include "MainWindow.g.cpp"
@@ -8,33 +8,29 @@
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace winrt::Agentic_Browser::implementation
 {
-    MainWindow::MainWindow() {
-
+    MainWindow::MainWindow()
+    {
         InitializeComponent();
 
-        //Title Bar Customization
+        // Title Bar Customization
         ExtendsContentIntoTitleBar(true);
         SetTitleBar(DragRegion());
-        
-        // Creating Initial Tab
-        CreateNewTab();
+
+        // Create initial tab
+        CreateNewTab(L"https://www.google.com");
     }
 
-    // Add New Tab Functionality
+    // + New Tab button
     void MainWindow::TabView_AddTabButtonClick(
-        Microsoft::UI::Xaml::Controls::TabView const& sender,
+        Microsoft::UI::Xaml::Controls::TabView const&,
         winrt::Windows::Foundation::IInspectable const&)
     {
-        CreateNewTab();
+        CreateNewTab(L"https://www.google.com");
     }
 
-
-    // Close Tab Functionality
+    // Close Tab
     void MainWindow::TabView_TabCloseRequested(
         Controls::TabView const& sender,
         Controls::TabViewTabCloseRequestedEventArgs const& args)
@@ -42,52 +38,53 @@ namespace winrt::Agentic_Browser::implementation
         uint32_t index{};
         auto items = sender.TabItems();
 
-        if (items.IndexOf(args.Tab(), index)) {
+        if (items.IndexOf(args.Tab(), index))
+        {
             items.RemoveAt(index);
         }
 
-        // Close Application if all tabs removed
-        if (items.Size() == 0) {
-            this->Close();   
+        if (items.Size() == 0)
+        {
+            this->Close();
         }
     }
 
-    void MainWindow::CreateNewTab()
+    // 🔥 SINGLE SOURCE OF TRUTH
+    void MainWindow::CreateNewTab(winrt::hstring const& initialUrl)
     {
         using namespace Microsoft::UI::Xaml::Controls;
         using namespace Microsoft::UI::Xaml::Media;
 
-        // 1. Create the Tab and the BrowserView component
         auto tab = TabViewItem{};
         auto browserView = winrt::Agentic_Browser::BrowserView{};
 
-        // 2. Set initial state
         tab.Header(winrt::box_value(L"New Tab"));
         tab.Content(browserView);
 
-        // 3. Hook the TitleChanged event to update the Tab Header
         browserView.TitleChanged([tab](auto const&, winrt::hstring const& newTitle)
             {
                 tab.Header(winrt::box_value(newTitle));
             });
 
-        // 4. Hook the FaviconChanged event to update the Tab Icon
         browserView.FaviconChanged([tab](auto const&, winrt::hstring const& uri)
             {
-                auto bitmapIcon = winrt::Microsoft::UI::Xaml::Controls::BitmapIconSource();
- 
+                auto bitmapIcon = BitmapIconSource();
                 bitmapIcon.UriSource(winrt::Windows::Foundation::Uri(uri));
                 bitmapIcon.ShowAsMonochrome(false);
-
                 tab.IconSource(bitmapIcon);
             });
 
-        // 5. Add to the TabView and select it
+        // 🚀 Handle Ctrl+Click / target=_blank
+        browserView.NewTabRequested(
+            [this](auto const&, winrt::hstring const& url)
+            {
+                CreateNewTab(url);
+            });
+
         Tabs().TabItems().Append(tab);
         Tabs().SelectedItem(tab);
 
-        // Optional: Set an initial URL if you have that method enabled
-        // browserView.NavigateTo(L"https://www.google.com");
+        // 🔑 Navigate immediately
+        browserView.NavigateTo(initialUrl);
     }
-
 }

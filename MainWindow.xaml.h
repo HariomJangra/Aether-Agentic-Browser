@@ -8,7 +8,7 @@ namespace winrt::Agentic_Browser::implementation
     {
         MainWindow();
 
-        void CreateNewTab();
+        void CreateNewTab(winrt::hstring const& initialUrl);
 
 
         void TabView_AddTabButtonClick(
