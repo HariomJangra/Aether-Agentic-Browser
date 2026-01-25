@@ -8,6 +8,28 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <UserControl.Resources>
+
+        <Style x:Key="NavIconButtonStyle" TargetType="Button">
+            <!-- Size & layout -->
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="0"/>
+
+            <!-- Shape -->
+            <Setter Property="CornerRadius" Value="6"/>
+
+            <!-- Normal state -->
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+
+            <!-- Hover state: To be Implemented -->
+      
+
+        </Style>
+
+    </UserControl.Resources>
 
     <Grid Background="#F4F2EF">
         <Border
@@ -17,19 +39,101 @@
             BorderThickness="1">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="37"/>
+                    <RowDefinition Height="43"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
+                
+                <!-- Top Bar -->
+                <Grid
+                    Background="#fdfcf9"
+                    BorderBrush="#D6D3CE"
+                    BorderThickness="0,0,0,1"
+                    Padding="6"
+                    ColumnSpacing="6">
 
-                <Border Background="#fdfcf9"
-                BorderBrush="#D6D3CE"
-                BorderThickness="0,0,0,1">
-                    <!-- Placeholder -->
-                    
-                </Border>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Navigation buttons -->
+                    <StackPanel
+                            Grid.Column="0"
+                            Orientation="Horizontal"
+                            Spacing="0">
+
+                        <Button x:Name="BackButton"
+                                Style="{StaticResource NavIconButtonStyle}">
+                            <Image Source="/Assets/Icons/angle-small-left.svg"
+                                Width="15"
+                                Height="15"/>
+                        </Button>
+
+                        <Button x:Name="ForwardButton"
+                                Style="{StaticResource NavIconButtonStyle}">
+                            <Image Source="/Assets/Icons/angle-small-right.svg"
+                                Width="15"
+                                Height="15"/>
+                        </Button>
+
+                        <Button x:Name="ReloadButton"
+                                Style="{StaticResource NavIconButtonStyle}">
+                            <Image Source="/Assets/Icons/rotate-right.svg"
+                                Width="11"
+                                Height="11"/>
+                        </Button>
+
+                    </StackPanel>
+
+                    <!-- URL bar -->
+                    <Grid
+                            Grid.Column="1"
+                            Background="#FFFFFF"
+                            BorderBrush="#20808d"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="5">
+
+                        <Grid ColumnSpacing="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Favicon placeholder -->
+                            <Image
+                                x:Name="FaviconImage"
+                                Width="20"
+                                Height="20"
+                                VerticalAlignment="Center"
+                                Source="/Assets/Icons/icons8-home.svg"/>
+
+                            <!-- URL TextBox -->
+                            <TextBox
+                                x:Name="UrlBox"
+                                Grid.Column="1"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                VerticalAlignment="Center"
+                                PlaceholderText="Search or enter address"/>
+                        </Grid>
+                    </Grid>
+
+
+                    <!-- Future actions -->
+                    <StackPanel
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        Spacing="4">
+
+                        <Button Content="⋮" Width="30"/>
+
+                    </StackPanel>
+
+                </Grid>
 
                 <Grid Grid.Row="1" Background="#fdfcf9">
-                    <!-- Placeholder -->
                     <WebView2 x:Name="WebView" Source="https://google.com" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </Grid>
             </Grid>

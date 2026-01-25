@@ -194,6 +194,18 @@
     the Windows App SDK Nuget package has not yet been restored.
   -->
   <ItemGroup>
+    <None Include="Assets\Icons\angle-small-left.svg">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\Icons\angle-small-right.svg">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\Icons\icons8-home.svg">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\Icons\rotate-right.svg">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">

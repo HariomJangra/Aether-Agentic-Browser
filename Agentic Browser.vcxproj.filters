@@ -61,6 +61,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Assets\Icons\angle-small-left.svg" />
+    <None Include="Assets\Icons\angle-small-right.svg" />
+    <None Include="Assets\Icons\rotate-right.svg" />
+    <None Include="Assets\Icons\icons8-home.svg" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
