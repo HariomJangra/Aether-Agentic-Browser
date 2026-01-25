@@ -19,105 +19,96 @@ namespace winrt::Agentic_Browser::implementation
     {
         InitializeComponent();
 
-        // 1. URL Box Input Handler
-        UrlBox().KeyDown([weak_this = get_weak(), this](IInspectable const&, Input::KeyRoutedEventArgs const& args)
+        // 1. Enter Key Handler
+        UrlBox().KeyDown([weak_this = get_weak()](IInspectable const&, Input::KeyRoutedEventArgs const& args)
             {
                 if (auto strong_this = weak_this.get())
                 {
                     if (args.Key() == Windows::System::VirtualKey::Enter)
                     {
-                        NavigateTo(UrlBox().Text());
+                        strong_this->NavigateTo(strong_this->UrlBox().Text());
+                        strong_this->WebView().Focus(FocusState::Programmatic);
                     }
                 }
             });
 
         // 2. Initialize CoreWebView2
-        // We only start hooking events after the Core engine is ready.
-        WebView().CoreWebView2Initialized(
-            [weak_this = get_weak(), this](auto&&, auto&&)
+        WebView().CoreWebView2Initialized([weak_this = get_weak()](auto&&, auto&&)
             {
                 if (auto strong_this = weak_this.get())
                 {
-                    HookCoreWebViewEvents();
+                    strong_this->HookCoreWebViewEvents();
                 }
             });
 
-        // Ensure the backing WebView2 process is initialized explicitly
         WebView().EnsureCoreWebView2Async();
-    }
 
-    winrt::hstring BrowserView::NormalizeUrl(winrt::hstring const& input)
-    {
-        std::wstring text{ input };
+        // 3. Comet-style Focus Handlers
+        UrlBox().GettingFocus([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    if (strong_this->WebView().CoreWebView2())
+                    {
+                        // Switch to full URL for editing
+                        strong_this->UrlBox().Text(strong_this->WebView().Source().AbsoluteUri());
+                        strong_this->UrlBox().SelectAll();
+                    }
+                }
+            });
 
-        // Trim whitespace
-        text.erase(0, text.find_first_not_of(L" \t"));
-        if (auto last = text.find_last_not_of(L" \t"); last != std::wstring::npos)
-        {
-            text.erase(last + 1);
-        }
-
-        if (text.empty())
-            return L"about:blank";
-
-        // If it already looks like a URL
-        if (text.starts_with(L"http://") || text.starts_with(L"https://") || text.starts_with(L"about:"))
-            return winrt::hstring{ text };
-
-        // If it looks like a domain name (contains dot, no spaces)
-        if (text.find(L'.') != std::wstring::npos && text.find(L' ') == std::wstring::npos)
-            return winrt::hstring{ L"https://" + text };
-
-        // Otherwise treating it as a search query
-        return winrt::hstring{ L"https://www.google.com/search?q=" + text };
-    }
-
-    void BrowserView::NavigateTo(winrt::hstring const& url)
-    {
-        auto normalized = NormalizeUrl(url);
-
-        try
-        {
-            // SAFETY: Uri constructor throws if the string is invalid. 
-            // We catch it to prevent the entire app from crashing.
-            winrt::Windows::Foundation::Uri targetUri{ normalized };
-            WebView().Source(targetUri);
-        }
-        catch (winrt::hresult_error const&)
-        {
-            // Optional: Set URL box to indicate error or navigate to a search of the invalid string
-            // For now, we just ignore the crash-inducing navigation.
-        }
-    }
-
-    void BrowserView::SetInitialUrl(winrt::hstring const& url)
-    {
-        NavigateTo(url);
+        UrlBox().LosingFocus([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    strong_this->UpdateUrlBarFromWebView();
+                }
+            });
     }
 
     void BrowserView::UpdateUrlBarFromWebView()
     {
-        // Check if CoreWebView2 is active before accessing Source
-        if (!WebView().CoreWebView2()) return;
+        auto core = WebView().CoreWebView2();
+        if (!core) return;
 
         try
         {
-            // Get the current source from the actual Core engine
-            auto uri = WebView().Source();
-            if (!uri) return;
+            // Check focus state so we don't overwrite the URL while the user is typing
+            bool isFocused = (UrlBox().FocusState() != Microsoft::UI::Xaml::FocusState::Unfocused);
 
-            auto url = uri.AbsoluteUri();
-
-            // Prevent feedback loop: only update if different
-            if (UrlBox().Text() != url)
+            if (!isFocused)
             {
-                UrlBox().Text(url);
+                auto uri = WebView().Source();
+                winrt::hstring host = uri.Host();
+                winrt::hstring title = core.DocumentTitle();
+
+                // 1. Clean up host (remove 'www.')
+                std::wstring hostStr{ host };
+                if (hostStr.find(L"www.") == 0) hostStr.erase(0, 4);
+
+                // 2. Logic to prevent "youtube.com / YouTube"
+                // We convert to lowercase to compare properly
+                std::wstring titleStr{ title };
+                std::transform(titleStr.begin(), titleStr.end(), titleStr.begin(), ::tolower);
+
+                std::wstring cleanHost = hostStr;
+                // Remove the TLD (.com, .org) for a cleaner comparison
+                size_t lastDot = cleanHost.find_last_of(L'.');
+                if (lastDot != std::wstring::npos) cleanHost = cleanHost.substr(0, lastDot);
+
+                // 3. Only add the title if it's NOT just repeating the domain name
+                if (!title.empty() && titleStr != hostStr && titleStr != cleanHost)
+                {
+                    UrlBox().Text(winrt::hstring(hostStr) + L" / " + title);
+                }
+                else
+                {
+                    // If they are the same, just show the domain (youtube.com)
+                    UrlBox().Text(winrt::hstring(hostStr));
+                }
             }
         }
-        catch (...)
-        {
-            // Swallow errors during UI updates to keep interface responsive
-        }
+        catch (...) {}
     }
 
     void BrowserView::HookCoreWebViewEvents()
@@ -125,34 +116,47 @@ namespace winrt::Agentic_Browser::implementation
         auto core = WebView().CoreWebView2();
         if (!core) return;
 
-        // 1. Handle URL bar updates
         core.SourceChanged([weak_this = get_weak()](auto&&, auto&&) {
             if (auto strong_this = weak_this.get()) {
                 strong_this->UpdateUrlBarFromWebView();
             }
             });
 
-        // 2. Handle Title
         core.DocumentTitleChanged([weak_this = get_weak()](auto const& sender, auto const&) {
             if (auto strong_this = weak_this.get()) {
-                // Fire event with the string title
+                strong_this->UpdateUrlBarFromWebView();
                 strong_this->m_titleChangedEvent(*strong_this, sender.DocumentTitle());
             }
             });
 
-        // 3. Handle Favicon (Back to URI method for clarity)
         core.FaviconChanged([weak_this = get_weak()](auto const& sender, auto const&) {
             if (auto strong_this = weak_this.get()) {
                 winrt::hstring uri = sender.FaviconUri();
                 if (!uri.empty()) {
-                    // Update local URL bar icon
                     auto bitmap = winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage(winrt::Windows::Foundation::Uri(uri));
                     strong_this->FaviconImage().Source(bitmap);
-
-                    // Fire event with the URI string
                     strong_this->m_faviconChangedEvent(*strong_this, uri);
                 }
             }
             });
+    }
+
+    // Include your NavigateTo, NormalizeUrl, and SetInitialUrl here as they were
+    void BrowserView::NavigateTo(winrt::hstring const& url)
+    {
+        auto normalized = NormalizeUrl(url);
+        try { WebView().Source(winrt::Windows::Foundation::Uri{ normalized }); }
+        catch (...) {}
+    }
+
+    winrt::hstring BrowserView::NormalizeUrl(winrt::hstring const& input)
+    {
+        std::wstring text{ input };
+        text.erase(0, text.find_first_not_of(L" \t"));
+        if (auto last = text.find_last_not_of(L" \t"); last != std::wstring::npos) text.erase(last + 1);
+        if (text.empty()) return L"about:blank";
+        if (text.starts_with(L"http://") || text.starts_with(L"https://") || text.starts_with(L"about:")) return winrt::hstring{ text };
+        if (text.find(L'.') != std::wstring::npos && text.find(L' ') == std::wstring::npos) return winrt::hstring{ L"https://" + text };
+        return winrt::hstring{ L"https://www.google.com/search?q=" + text };
     }
 }
