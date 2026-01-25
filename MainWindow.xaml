@@ -9,16 +9,19 @@
     mc:Ignorable="d"
     Title="Agentic Browser">
 
-    <TabView x:Name="Tabs"
-             VerticalAlignment="Stretch"
-             AddTabButtonClick="TabView_AddTabButtonClick"
-             TabCloseRequested="TabView_TabCloseRequested"
-             CanReorderTabs="True"
-             CanDragTabs="True">
-        
-        
-        <TabView.TabStripFooter>
-            <Grid x:Name="DragRegion" Background="Transparent" MinWidth="180"/>
-        </TabView.TabStripFooter>
-    </TabView>
+    <Grid Background="#d3e3fd">
+        <TabView x:Name="Tabs"
+         VerticalAlignment="Stretch"
+         AddTabButtonClick="TabView_AddTabButtonClick"
+         TabCloseRequested="TabView_TabCloseRequested"
+         CanReorderTabs="True"
+         CanDragTabs="True">
+
+            <TabView.TabStripFooter>
+                <Grid x:Name="DragRegion" Background="Transparent" MinWidth="180"/>
+            </TabView.TabStripFooter>
+        </TabView>
+
+    </Grid>
+    
 </Window>

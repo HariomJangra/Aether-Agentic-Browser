@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Page
+<UserControl
     x:Class="Agentic_Browser.BrowserView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -8,7 +8,33 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid>
-        <WebView2 Source="https://www.google.com"/>
+
+    <Grid Background="#F4F2EF">
+        <Border
+            Margin="4"
+            CornerRadius="7"
+            BorderBrush="#D6D3CE"
+            BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="37"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Border Background="#fdfcf9"
+                BorderBrush="#D6D3CE"
+                BorderThickness="0,0,0,1">
+                    <!-- Placeholder -->
+                    
+                </Border>
+
+                <Grid Grid.Row="1" Background="#fdfcf9">
+                    <!-- Placeholder -->
+                    <WebView2 x:Name="WebView" Source="https://google.com" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                </Grid>
+            </Grid>
+        </Border>
     </Grid>
-</Page>
+    
+    
+</UserControl>
