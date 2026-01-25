@@ -116,7 +116,7 @@
                                 Background="Transparent"
                                 BorderThickness="0"
                                 VerticalAlignment="Center"
-                                PlaceholderText="Search or enter address"/>
+                                PlaceholderText="Enter address"/>
                         </Grid>
                     </Grid>
 

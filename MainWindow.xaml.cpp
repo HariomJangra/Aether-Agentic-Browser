@@ -63,6 +63,12 @@ namespace winrt::Agentic_Browser::implementation
 
         Tabs().TabItems().Append(tab);
         Tabs().SelectedItem(tab);
+
+        /*auto browserView = winrt::Agentic_Browser::BrowserView{};
+        browserView.SetInitialUrl(L"https://www.google.com");
+
+        tab.Content(browserView);*/
+
     }
 
 }

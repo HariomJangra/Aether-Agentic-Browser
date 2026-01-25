@@ -6,12 +6,15 @@ namespace winrt::Agentic_Browser::implementation
 {
     struct BrowserView : BrowserViewT<BrowserView>
     {
-        BrowserView()
-        {
-            // Xaml objects should not call InitializeComponent during construction.
-            // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
-        }
+        BrowserView();
 
+        void NavigateTo(winrt::hstring const& url);
+        void SetInitialUrl(winrt::hstring const& url);
+
+    private:
+        winrt::hstring NormalizeUrl(winrt::hstring const& input);
+        void UpdateUrlBarFromWebView();
+        void HookCoreWebViewEvents();
         
     };
 }
