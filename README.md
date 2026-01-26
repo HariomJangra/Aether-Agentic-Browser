@@ -1,4 +1,4 @@
-# Agentic Browser 🌐
+# Agentic Browser
 
 ![Platform](https://img.shields.io/badge/platform-Windows-blue)
 ![Framework](https://img.shields.io/badge/Framework-WinUI_3-orange)
@@ -7,7 +7,7 @@
 
 A modern desktop web browser built from the ground up using **WinUI 3** and **Microsoft WebView2**. 
 
-Agentic Browser focuses on providing a clean, high-performance browser shell with custom tab management and modern Windows 11 design language.
+Agentic Browser focuses on providing a clean, high-performance browser shell and modern Windows 11 design language.
 
 ---
 
