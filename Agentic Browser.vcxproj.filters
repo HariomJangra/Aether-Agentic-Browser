@@ -51,7 +51,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="readme.txt" />
+    <Text Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="app.manifest" />

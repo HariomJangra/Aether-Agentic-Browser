@@ -22,7 +22,7 @@ namespace winrt::Agentic_Browser::implementation
         CreateNewTab(L"https://www.google.com");
     }
 
-    // + New Tab button
+    //  New Tab button
     void MainWindow::TabView_AddTabButtonClick(
         Microsoft::UI::Xaml::Controls::TabView const&,
         winrt::Windows::Foundation::IInspectable const&)
@@ -49,7 +49,7 @@ namespace winrt::Agentic_Browser::implementation
         }
     }
 
-    // 🔥 SINGLE SOURCE OF TRUTH
+    // SINGLE SOURCE OF TRUTH
     void MainWindow::CreateNewTab(winrt::hstring const& initialUrl)
     {
         using namespace Microsoft::UI::Xaml::Controls;
@@ -74,7 +74,7 @@ namespace winrt::Agentic_Browser::implementation
                 tab.IconSource(bitmapIcon);
             });
 
-        // 🚀 Handle Ctrl+Click / target=_blank
+        // Handle Ctrl+Click / target=_blank
         browserView.NewTabRequested(
             [this](auto const&, winrt::hstring const& url)
             {
@@ -84,7 +84,7 @@ namespace winrt::Agentic_Browser::implementation
         Tabs().TabItems().Append(tab);
         Tabs().SelectedItem(tab);
 
-        // 🔑 Navigate immediately
+        // Navigate immediately
         browserView.NavigateTo(initialUrl);
     }
 }
