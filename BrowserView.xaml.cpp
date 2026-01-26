@@ -19,6 +19,42 @@ namespace winrt::Agentic_Browser::implementation
     {
         InitializeComponent();
 
+        // Back
+        BackButton().Click([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    if (strong_this->WebView().CanGoBack())
+                    {
+                        strong_this->WebView().GoBack();
+                    }
+                }
+            });
+
+        // Forward
+        ForwardButton().Click([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    if (strong_this->WebView().CanGoForward())
+                    {
+                        strong_this->WebView().GoForward();
+                    }
+                }
+            });
+
+        // Reload
+        ReloadButton().Click([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    if (auto core = strong_this->WebView().CoreWebView2())
+                    {
+                        core.Reload();
+                    }
+                }
+            });
+
         // 1. Enter Key Handler
         UrlBox().KeyDown([weak_this = get_weak()](IInspectable const&, Input::KeyRoutedEventArgs const& args)
             {
@@ -42,6 +78,8 @@ namespace winrt::Agentic_Browser::implementation
             });
 
         WebView().EnsureCoreWebView2Async();
+
+
 
         // 3. UrlBox focus behavior
         UrlBox().GettingFocus([weak_this = get_weak()](auto const&, auto const&)
@@ -164,6 +202,20 @@ namespace winrt::Agentic_Browser::implementation
                     );
                 }
             });
+
+        core.HistoryChanged(
+            [weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto strong_this = weak_this.get())
+                {
+                    strong_this->BackButton().IsEnabled(
+                        strong_this->WebView().CanGoBack());
+
+                    strong_this->ForwardButton().IsEnabled(
+                        strong_this->WebView().CanGoForward());
+                }
+            });
+
 
     }
 
