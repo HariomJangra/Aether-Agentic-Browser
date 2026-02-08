@@ -256,7 +256,7 @@ namespace winrt::Agentic_Browser::implementation
             // Check if this is the special home page URL
             if (uriStr == HOME_PAGE_URL)
             {
-                UrlBox().Text(L"Ask Anything");
+                UrlBox().Text(L"Ask Anything->");
                 return;
             }
 
