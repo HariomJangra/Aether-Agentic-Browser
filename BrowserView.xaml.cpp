@@ -199,7 +199,7 @@ namespace winrt::Agentic_Browser::implementation
                             // Show "Enter address" for home page, show full URL for others
                             if (uriStr == HOME_PAGE_URL)
                             {
-                                self->UrlBox().Text(L"Enter address");
+                                self->UrlBox().Text(L"Ask Anything->");
                             }
                             else
                             {
@@ -256,7 +256,7 @@ namespace winrt::Agentic_Browser::implementation
             // Check if this is the special home page URL
             if (uriStr == HOME_PAGE_URL)
             {
-                UrlBox().Text(L"Search");
+                UrlBox().Text(L"Ask Anything");
                 return;
             }
 

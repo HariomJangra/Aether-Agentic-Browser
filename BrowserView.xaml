@@ -115,7 +115,7 @@
                                 Background="Transparent"
                                 BorderThickness="0"
                                 VerticalAlignment="Center"
-                                PlaceholderText="Enter address"/>
+                                PlaceholderText=""/>
                         </Grid>
                     </Grid>
 
