@@ -20,10 +20,13 @@ namespace winrt::Agentic_Browser::implementation
         winrt::event_token NewTabRequested(Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring> const& handler){ return m_newTabRequestedEvent.add(handler); }
         void NewTabRequested(winrt::event_token const& token) noexcept { m_newTabRequestedEvent.remove(token); }
 
+
     private:
         winrt::hstring NormalizeUrl(winrt::hstring const& input);
         void UpdateUrlBarFromWebView();
         void HookCoreWebViewEvents();
+       
+        
 
         // --- Event Backing Fields ---
         winrt::event<Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring>> m_titleChangedEvent;

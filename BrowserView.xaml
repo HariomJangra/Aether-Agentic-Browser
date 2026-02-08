@@ -134,7 +134,7 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Background="#fdfcf9">
-                    <WebView2 x:Name="WebView" Source="https://google.com" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                    <WebView2 x:Name="WebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                 </Grid>
             </Grid>
         </Border>
