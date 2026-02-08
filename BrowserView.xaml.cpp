@@ -17,6 +17,9 @@ using namespace winrt::Microsoft::Web::WebView2::Core;
 
 namespace winrt::Agentic_Browser::implementation
 {
+    // Special home page URL
+    constexpr wchar_t HOME_PAGE_URL[] = L"file:///F:/Browser%20Development/Agentic%20AI/HomePage/index.html";
+
     BrowserView::BrowserView()
     {
         InitializeComponent();
@@ -70,8 +73,7 @@ namespace winrt::Agentic_Browser::implementation
         CoreWebView2EnvironmentOptions options;
         options.AreBrowserExtensionsEnabled(true);
 
-        auto env_task =
-            CoreWebView2Environment::CreateWithOptionsAsync(L"", L"", options);
+        auto env_task = CoreWebView2Environment::CreateWithOptionsAsync(L"", L"", options);
 
         env_task.Completed(
             [this, weak_this = get_weak()](auto&& operation, auto&& status)
@@ -100,10 +102,29 @@ namespace winrt::Agentic_Browser::implementation
 
                     if (auto core = self->WebView().CoreWebView2())
                     {
+                        // --- ADDED SETTINGS CONFIGURATION ---
+                        auto settings = core.Settings();
+
+                        // Enables edge://settings and other internal management pages
+
+
+                        // Allows your agent to run JavaScript via ExecuteScriptAsync
+                        settings.IsScriptEnabled(true);
+
+                        // This enables the "hidden" browser accelerator keys (like Ctrl+Shift+I)
+                        settings.AreBrowserAcceleratorKeysEnabled(true);
+
+                        // This ensures the context menu (Right Click) is available
+                        settings.AreDefaultContextMenusEnabled(true);
+
+                        // Browser debugging:
+                        settings.AreDevToolsEnabled(true);
+
+
                         if (auto profile = core.Profile())
                         {
                             auto ext_task = profile.AddBrowserExtensionAsync(
-                                L"F:\\PathtoExtension"
+                                L"F:\\Browser Development\\Backend\\Extensions\\AdGuard"
                             );
 
                             ext_task.Completed([](auto&& op, auto&& s)
@@ -137,10 +158,58 @@ namespace winrt::Agentic_Browser::implementation
                 {
                     if (self->WebView().CoreWebView2())
                     {
-                        self->UrlBox().Text(
-                            self->WebView().Source().AbsoluteUri()
-                        );
+                        auto uriStr = self->WebView().Source().AbsoluteUri();
+
+                        // Clear text for home page, show full URL for others
+                        if (uriStr == HOME_PAGE_URL)
+                        {
+                            self->UrlBox().Text(L"");
+                        }
+                        else
+                        {
+                            self->UrlBox().Text(uriStr);
+                        }
+
                         self->UrlBox().SelectAll();
+                    }
+                }
+            });
+
+        // Show actual URL on hover
+        UrlBox().PointerEntered([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto self = weak_this.get())
+                {
+                    if (self->WebView().CoreWebView2())
+                    {
+                        // Show actual URL when hovering (only if not focused)
+                        if (self->UrlBox().FocusState() == FocusState::Unfocused)
+                        {
+                            auto uriStr = self->WebView().Source().AbsoluteUri();
+                            
+                            // Show "Enter address" for home page, show full URL for others
+                            if (uriStr == HOME_PAGE_URL)
+                            {
+                                self->UrlBox().Text(L"Enter address");
+                            }
+                            else
+                            {
+                                self->UrlBox().Text(uriStr);
+                            }
+                        }
+                    }
+                }
+            });
+
+        // Restore display text when not hovering
+        UrlBox().PointerExited([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto self = weak_this.get())
+                {
+                    // Only restore if not focused
+                    if (self->UrlBox().FocusState() == FocusState::Unfocused)
+                    {
+                        self->UpdateUrlBarFromWebView();
                     }
                 }
             });
@@ -173,6 +242,15 @@ namespace winrt::Agentic_Browser::implementation
         try
         {
             auto uri = WebView().Source();
+            auto uriStr = uri.AbsoluteUri();
+
+            // Check if this is the special home page URL
+            if (uriStr == HOME_PAGE_URL)
+            {
+                UrlBox().Text(L"Search");
+                return;
+            }
+
             auto host = uri.Host();
             auto title = core.DocumentTitle();
 
@@ -274,7 +352,7 @@ namespace winrt::Agentic_Browser::implementation
 
     void BrowserView::NavigateTo(winrt::hstring const& url)
     {
-        auto normalized = url;
+        auto normalized = NormalizeUrl(url);
 
         try
         {
