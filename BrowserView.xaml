@@ -24,8 +24,84 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
 
-            <!-- Hover state: To be Implemented -->
-      
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="RootGrid"
+                              Background="{TemplateBinding Background}"
+                              CornerRadius="{TemplateBinding CornerRadius}">
+                            
+                            <ContentPresenter x:Name="ContentPresenter"
+                                            Content="{TemplateBinding Content}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Padding="{TemplateBinding Padding}"/>
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    
+                                    <!-- Normal State -->
+                                    <VisualState x:Name="Normal">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="RootGrid"
+                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                          To="Transparent"
+                                                          Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="1.0"
+                                                           Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </VisualState>
+
+                                    <!-- Hover State -->
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="RootGrid"
+                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                          To="#E5E5E5"
+                                                          Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="1.0"
+                                                           Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </VisualState>
+
+                                    <!-- Pressed State -->
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="RootGrid"
+                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                          To="#D0D0D0"
+                                                          Duration="0:0:0.05"/>
+                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="0.7"
+                                                           Duration="0:0:0.05"/>
+                                        </Storyboard>
+                                    </VisualState>
+
+                                    <!-- Disabled State -->
+                                    <VisualState x:Name="Disabled">
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetName="RootGrid"
+                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                          To="Transparent"
+                                                          Duration="0:0:0.1"/>
+                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
+                                                           Storyboard.TargetProperty="Opacity"
+                                                           To="0.3"
+                                                           Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </VisualState>
+
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
 
         </Style>
 
@@ -64,14 +140,16 @@
                             Spacing="0">
 
                         <Button x:Name="BackButton"
-                                Style="{StaticResource NavIconButtonStyle}">
+                                Style="{StaticResource NavIconButtonStyle}"
+                                IsEnabled="False">
                             <Image Source="/Assets/Icons/angle-small-left.svg"
                                 Width="15"
                                 Height="15"/>
                         </Button>
 
                         <Button x:Name="ForwardButton"
-                                Style="{StaticResource NavIconButtonStyle}">
+                                Style="{StaticResource NavIconButtonStyle}"
+                                IsEnabled="False">
                             <Image Source="/Assets/Icons/angle-small-right.svg"
                                 Width="15"
                                 Height="15"/>

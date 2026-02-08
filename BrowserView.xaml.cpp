@@ -346,15 +346,19 @@ namespace winrt::Agentic_Browser::implementation
                 }
             });
 
-        core.HistoryChanged([weak_this = get_weak()](auto const&, auto const&)
+        core.NavigationCompleted([weak_this = get_weak()](auto&&, auto&&)
             {
                 if (auto self = weak_this.get())
                 {
-                    self->BackButton().IsEnabled(
-                        self->WebView().CanGoBack());
-
-                    self->ForwardButton().IsEnabled(
-                        self->WebView().CanGoForward());
+                    self->UpdateNavigationButtonStates();
+                }
+            });
+        
+        core.HistoryChanged([weak_this = get_weak()](auto&&, auto&&)
+            {
+                if (auto self = weak_this.get())
+                {
+                    self->UpdateNavigationButtonStates();
                 }
             });
     }
@@ -414,5 +418,19 @@ namespace winrt::Agentic_Browser::implementation
         return winrt::hstring{
             L"https://www.google.com/search?q=" + text
         };
+    }
+
+    void BrowserView::UpdateNavigationButtonStates()
+    {
+        if (WebView().CoreWebView2())
+        {
+            BackButton().IsEnabled(WebView().CanGoBack());
+            ForwardButton().IsEnabled(WebView().CanGoForward());
+        }
+        else
+        {
+            BackButton().IsEnabled(false);
+            ForwardButton().IsEnabled(false);
+        }
     }
 }
