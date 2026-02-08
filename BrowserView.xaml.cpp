@@ -145,9 +145,18 @@ namespace winrt::Agentic_Browser::implementation
                         }
                     }
 
-                    self->NavigateTo(
-                        L"file:///F:/Browser Development/Agentic AI/HomePage/index.html"
-                    );
+                    // Navigate to pending URL if exists, otherwise home page
+                    if (!self->m_pendingNavigationUrl.empty())
+                    {
+                        self->NavigateTo(self->m_pendingNavigationUrl);
+                        self->m_pendingNavigationUrl = L"";
+                    }
+                    else
+                    {
+                        self->NavigateTo(
+                            L"file:///F:/Browser Development/Agentic AI/HomePage/index.html"
+                        );
+                    }
                 }
             });
 
@@ -352,6 +361,13 @@ namespace winrt::Agentic_Browser::implementation
 
     void BrowserView::NavigateTo(winrt::hstring const& url)
     {
+        // Store URL if WebView2 not ready yet
+        if (!WebView().CoreWebView2())
+        {
+            m_pendingNavigationUrl = url;
+            return;
+        }
+
         auto normalized = NormalizeUrl(url);
 
         try

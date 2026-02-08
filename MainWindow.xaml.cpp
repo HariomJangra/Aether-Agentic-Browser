@@ -19,7 +19,7 @@ namespace winrt::Agentic_Browser::implementation
         SetTitleBar(DragRegion());
 
         // Create initial tab
-        CreateNewTab(L"https://www.google.com");
+        CreateNewTab(L"");
     }
 
     //  New Tab button
@@ -27,7 +27,7 @@ namespace winrt::Agentic_Browser::implementation
         Microsoft::UI::Xaml::Controls::TabView const&,
         winrt::Windows::Foundation::IInspectable const&)
     {
-        CreateNewTab(L"https://www.google.com");
+        CreateNewTab(L"");
     }
 
     // Close Tab

@@ -25,6 +25,7 @@ namespace winrt::Agentic_Browser::implementation
         winrt::hstring NormalizeUrl(winrt::hstring const& input);
         void UpdateUrlBarFromWebView();
         void HookCoreWebViewEvents();
+        winrt::hstring m_pendingNavigationUrl;
        
         
 

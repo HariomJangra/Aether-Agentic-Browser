@@ -103,11 +103,10 @@
 
                             <!-- Favicon placeholder -->
                             <Image
-                                x:Name="FaviconImage"
-                                Width="20"
-                                Height="20"
-                                VerticalAlignment="Center"
-                                Source="/Assets/Icons/icons8-home.svg"/>
+                                x:Name="FaviconImage"  
+                                Stretch="UniformToFill" 
+                                VerticalAlignment="Center"      
+                                />
 
                             <!-- URL TextBox -->
                             <TextBox
