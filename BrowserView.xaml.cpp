@@ -193,6 +193,22 @@ namespace winrt::Agentic_Browser::implementation
                 }
             });
 
+        // Select all text when clicking on the URL bar (even if already focused)
+        UrlBox().GotFocus([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto self = weak_this.get())
+                {
+                    // Use Dispatcher to ensure SelectAll happens after focus completes
+                    self->DispatcherQueue().TryEnqueue([weak_this]()
+                        {
+                            if (auto self = weak_this.get())
+                            {
+                                self->UrlBox().SelectAll();
+                            }
+                        });
+                }
+            });
+
         // Show actual URL on hover (with delay)
         UrlBox().PointerEntered([weak_this = get_weak()](auto const&, auto const&)
             {
@@ -299,7 +315,7 @@ namespace winrt::Agentic_Browser::implementation
             // Check if this is the special home page URL
             if (uriStr == HOME_PAGE_URL)
             {
-                UrlBox().Text(L"Ask Anything->");
+                UrlBox().Text(L"Ask Anything...");
                 return;
             }
 
