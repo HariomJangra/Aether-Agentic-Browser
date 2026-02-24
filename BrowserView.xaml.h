@@ -27,6 +27,9 @@ namespace winrt::Agentic_Browser::implementation
         void HookCoreWebViewEvents();
         void UpdateNavigationButtonStates();
         winrt::hstring m_pendingNavigationUrl;
+
+        // Timer for URL hover delay
+        Microsoft::UI::Xaml::DispatcherTimer m_hoverTimer{ nullptr };
        
         
 

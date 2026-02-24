@@ -9,18 +9,27 @@
     mc:Ignorable="d"
     Title="Agentic Browser">
 
+    
+
     <Grid Background="#d3e3fd">
         <TabView x:Name="Tabs"
+         Background="#E8F0FE"
          VerticalAlignment="Stretch"
          AddTabButtonClick="TabView_AddTabButtonClick"
          TabCloseRequested="TabView_TabCloseRequested"
          CanReorderTabs="True"
          CanDragTabs="True">
+            <TabView.Resources>
+                <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="#F4F2EF"/>
+                <SolidColorBrush x:Key="TabViewItemHeaderForegroundSelected" Color="Black"/>
+                <SolidColorBrush x:Key="TabViewTrackBackground" Color="#FFEEEEEE"/>
+            </TabView.Resources>
 
             <TabView.TabStripFooter>
                 <Grid x:Name="DragRegion" Background="Transparent" MinWidth="180"/>
             </TabView.TabStripFooter>
         </TabView>
+        
 
     </Grid>
     
