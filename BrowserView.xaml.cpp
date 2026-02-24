@@ -492,4 +492,28 @@ namespace winrt::Agentic_Browser::implementation
             ForwardButton().IsEnabled(false);
         }
     }
+    void BrowserView::Cleanup()
+    {
+        try
+        {
+            // Stop the hover timer if running
+            if (m_hoverTimer)
+            {
+                m_hoverTimer.Stop();
+                m_hoverTimer = nullptr;
+            }
+
+            // Stop any media playback and close the WebView2
+            if (auto core = WebView().CoreWebView2())
+            {
+                // Navigate to about:blank to stop all content
+                core.Navigate(L"about:blank");
+            }
+
+            // Close the WebView2 control
+            WebView().Close();
+        }
+        catch (...) {}
+    }
+
 }

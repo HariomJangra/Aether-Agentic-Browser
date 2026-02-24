@@ -6,6 +6,7 @@ namespace Agentic_Browser
         BrowserView();
         
         void NavigateTo(String url);
+        void Cleanup();
 
         event Windows.Foundation.TypedEventHandler<BrowserView, String> TitleChanged;
         event Windows.Foundation.TypedEventHandler<BrowserView, String> FaviconChanged;

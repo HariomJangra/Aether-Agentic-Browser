@@ -40,6 +40,15 @@ namespace winrt::Agentic_Browser::implementation
 
         if (items.IndexOf(args.Tab(), index))
         {
+            // Clean up the BrowserView before removing the tab
+            if (auto tab = args.Tab())
+            {
+                if (auto browserView = tab.Content().try_as<Agentic_Browser::BrowserView>())
+                {
+                    browserView.Cleanup();
+                }
+            }
+
             items.RemoveAt(index);
         }
 

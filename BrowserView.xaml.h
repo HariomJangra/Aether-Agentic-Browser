@@ -9,6 +9,7 @@ namespace winrt::Agentic_Browser::implementation
         BrowserView();
 
         void NavigateTo(winrt::hstring const& url);
+        void Cleanup(); 
 
         // --- Event Registrations ---
         winrt::event_token TitleChanged(Windows::Foundation::TypedEventHandler<Agentic_Browser::BrowserView, winrt::hstring> const& handler) { return m_titleChangedEvent.add(handler); }
