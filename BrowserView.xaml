@@ -208,6 +208,7 @@
                         Orientation="Horizontal"
                         Spacing="4">
 
+                        <Button Content="Assistant" Width="100" Click="AssistantButton_Click"/>
                         <Button Content="⋮" Width="30"/>
 
                     </StackPanel>
@@ -215,8 +216,63 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Background="#fdfcf9">
-                    <WebView2 x:Name="WebView" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition x:Name="WebColumn" Width="*"/>
+                        <ColumnDefinition x:Name="SplitterColumn" Width="Auto"/>
+                        <ColumnDefinition x:Name="AssistantColumn" Width="0"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- WebView -->
+                    <WebView2 x:Name="WebView"
+              Grid.Column="0"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"/>
+
+                    <!-- GridSplitter -->
+                    <Border x:Name="GridSplitterBorder"
+            Grid.Column="1"
+            Width="5"
+            Background="Transparent"
+            Visibility="Collapsed">
+        <Rectangle Fill="#D6D3CE" 
+                   Width="1"
+                   HorizontalAlignment="Center"/>
+    </Border>
+
+                    <!-- Assistant Panel -->
+                    <Grid x:Name="AssistantPanel"
+          Grid.Column="2"
+          Background="#F8F6F2">
+
+                        <Border BorderBrush="#D6D3CE"
+                BorderThickness="1,0,0,0">
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="40"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <Grid Background="#FDFCF9"
+                      BorderBrush="#D6D3CE"
+                      BorderThickness="0,0,0,1"
+                      Padding="10">
+                                    <TextBlock Text="Assistant"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <StackPanel Grid.Row="1" Padding="10">
+                                    <TextBlock Text="Assistant content goes here..."/>
+                                </StackPanel>
+                            </Grid>
+
+                        </Border>
+                    </Grid>
+
                 </Grid>
+
             </Grid>
         </Border>
     </Grid>

@@ -10,10 +10,10 @@ namespace winrt::Agentic_Browser::implementation
 
         void CreateNewTab(winrt::hstring const& initialUrl);
 
-
         void TabView_AddTabButtonClick(
             Microsoft::UI::Xaml::Controls::TabView const& sender,
             winrt::Windows::Foundation::IInspectable const&);
+
         void TabView_TabCloseRequested(
             Microsoft::UI::Xaml::Controls::TabView const& sender,
             Microsoft::UI::Xaml::Controls::TabViewTabCloseRequestedEventArgs const& args);

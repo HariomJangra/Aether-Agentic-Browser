@@ -95,5 +95,6 @@ namespace winrt::Agentic_Browser::implementation
 
         // Navigate immediately
         browserView.NavigateTo(initialUrl);
+
     }
 }

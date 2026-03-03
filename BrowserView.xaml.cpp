@@ -11,6 +11,8 @@
 #include <winrt/Windows.System.h>
 #include <winrt/Microsoft.Web.WebView2.Core.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Animation.h>
+#include <winrt/Microsoft.UI.Input.h>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -514,6 +516,67 @@ namespace winrt::Agentic_Browser::implementation
             WebView().Close();
         }
         catch (...) {}
+    }
+
+    void BrowserView::AssistantButton_Click(IInspectable const& sender, RoutedEventArgs const& e)
+    {
+        if (AssistantColumn().Width().Value == 0)
+        {
+            // Show assistant panel
+            AssistantColumn().Width(GridLengthHelper::FromValueAndType(350, GridUnitType::Pixel));
+            GridSplitterBorder().Visibility(Visibility::Visible);
+            
+            // Add splitter interaction handlers
+            GridSplitterBorder().PointerPressed({ this, &BrowserView::OnSplitterPointerPressed });
+            GridSplitterBorder().PointerMoved({ this, &BrowserView::OnSplitterPointerMoved });
+            GridSplitterBorder().PointerReleased({ this, &BrowserView::OnSplitterPointerReleased });
+            GridSplitterBorder().PointerCaptureLost({ this, &BrowserView::OnSplitterPointerReleased });
+        }
+        else
+        {
+            // Hide assistant panel
+            AssistantColumn().Width(GridLengthHelper::FromValueAndType(0, GridUnitType::Pixel));
+            GridSplitterBorder().Visibility(Visibility::Collapsed);
+        }
+    }
+
+    bool m_isDragging = false;
+
+    void BrowserView::OnSplitterPointerPressed(
+        winrt::Windows::Foundation::IInspectable const& sender,
+        winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+    {
+        auto border = sender.as<winrt::Microsoft::UI::Xaml::Controls::Border>();
+        border.CapturePointer(e.Pointer());
+        m_isDragging = true;
+    }
+
+    void BrowserView::OnSplitterPointerMoved(
+        winrt::Windows::Foundation::IInspectable const& sender,
+        winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+    {
+        if (!m_isDragging) return;
+
+        auto position = e.GetCurrentPoint(*this).Position();
+
+        double newWidth = ActualWidth() - position.X;
+
+        if (newWidth >= 250 && newWidth <= ActualWidth() * 0.7)
+        {
+            AssistantColumn().Width(
+                winrt::Microsoft::UI::Xaml::GridLengthHelper::FromPixels(newWidth));
+        }
+    }
+
+    void BrowserView::OnSplitterPointerReleased(
+        winrt::Windows::Foundation::IInspectable const& sender,
+        winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+    {
+        if (!m_isDragging) return;
+
+        auto border = sender.as<winrt::Microsoft::UI::Xaml::Controls::Border>();
+        border.ReleasePointerCapture(e.Pointer());
+        m_isDragging = false;
     }
 
 }
