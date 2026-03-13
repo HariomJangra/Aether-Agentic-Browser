@@ -197,9 +197,13 @@
     <None Include="Assets\Icons\angle-small-right.svg" />
     <None Include="Assets\Icons\rotate-right.svg" />
     <None Include="Assets\Icons\icons8-home.svg" />
+    <None Include="Assets\Icons\icons8-close.svg" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\fonts\substance-lightitalic.otf" />
   </ItemGroup>
 </Project>

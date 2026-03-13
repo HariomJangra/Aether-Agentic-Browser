@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- Browser View UserControl -->
 <UserControl
     x:Class="Agentic_Browser.BrowserView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,10 +10,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
+    <!-- Shared resources used inside this control -->
     <UserControl.Resources>
 
+        <!-- Style used for navigation icon buttons -->
         <Style x:Key="NavIconButtonStyle" TargetType="Button">
-            <!-- Size & layout -->
+
+            <!-- Size -->
             <Setter Property="Width" Value="28"/>
             <Setter Property="Height" Value="28"/>
             <Setter Property="Padding" Value="0"/>
@@ -19,87 +24,112 @@
             <!-- Shape -->
             <Setter Property="CornerRadius" Value="6"/>
 
-            <!-- Normal state -->
+            <!-- Default appearance -->
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
 
+            <!-- Custom button template -->
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid x:Name="RootGrid"
-                              Background="{TemplateBinding Background}"
-                              CornerRadius="{TemplateBinding CornerRadius}">
-                            
-                            <ContentPresenter x:Name="ContentPresenter"
-                                            Content="{TemplateBinding Content}"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Padding="{TemplateBinding Padding}"/>
 
+                    <ControlTemplate TargetType="Button">
+
+                        <!-- Root container for button visuals -->
+                        <Grid
+                            x:Name="RootGrid"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+
+                            <!-- Button content -->
+                            <ContentPresenter
+                                x:Name="ContentPresenter"
+                                Content="{TemplateBinding Content}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Padding="{TemplateBinding Padding}"/>
+
+                            <!-- Visual states for interaction -->
                             <VisualStateManager.VisualStateGroups>
+
                                 <VisualStateGroup x:Name="CommonStates">
-                                    
-                                    <!-- Normal State -->
+
+                                    <!-- Default state -->
                                     <VisualState x:Name="Normal">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="RootGrid"
-                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
-                                                          To="Transparent"
-                                                          Duration="0:0:0.1"/>
-                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
-                                                           Storyboard.TargetProperty="Opacity"
-                                                           To="1.0"
-                                                           Duration="0:0:0.1"/>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                To="Transparent"
+                                                Duration="0:0:0.1"/>
+
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ContentPresenter"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1.0"
+                                                Duration="0:0:0.1"/>
                                         </Storyboard>
                                     </VisualState>
 
-                                    <!-- Hover State -->
+                                    <!-- Hover state -->
                                     <VisualState x:Name="PointerOver">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="RootGrid"
-                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
-                                                          To="#E5E5E5"
-                                                          Duration="0:0:0.1"/>
-                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
-                                                           Storyboard.TargetProperty="Opacity"
-                                                           To="1.0"
-                                                           Duration="0:0:0.1"/>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                To="#E5E5E5"
+                                                Duration="0:0:0.1"/>
+
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ContentPresenter"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="1.0"
+                                                Duration="0:0:0.1"/>
                                         </Storyboard>
                                     </VisualState>
 
-                                    <!-- Pressed State -->
+                                    <!-- Pressed state -->
                                     <VisualState x:Name="Pressed">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="RootGrid"
-                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
-                                                          To="#D0D0D0"
-                                                          Duration="0:0:0.05"/>
-                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
-                                                           Storyboard.TargetProperty="Opacity"
-                                                           To="0.7"
-                                                           Duration="0:0:0.05"/>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                To="#D0D0D0"
+                                                Duration="0:0:0.05"/>
+
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ContentPresenter"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0.7"
+                                                Duration="0:0:0.05"/>
                                         </Storyboard>
                                     </VisualState>
 
-                                    <!-- Disabled State -->
+                                    <!-- Disabled state -->
                                     <VisualState x:Name="Disabled">
                                         <Storyboard>
-                                            <ColorAnimation Storyboard.TargetName="RootGrid"
-                                                          Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
-                                                          To="Transparent"
-                                                          Duration="0:0:0.1"/>
-                                            <DoubleAnimation Storyboard.TargetName="ContentPresenter"
-                                                           Storyboard.TargetProperty="Opacity"
-                                                           To="0.3"
-                                                           Duration="0:0:0.1"/>
+                                            <ColorAnimation
+                                                Storyboard.TargetName="RootGrid"
+                                                Storyboard.TargetProperty="(Grid.Background).(SolidColorBrush.Color)"
+                                                To="Transparent"
+                                                Duration="0:0:0.1"/>
+
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ContentPresenter"
+                                                Storyboard.TargetProperty="Opacity"
+                                                To="0.3"
+                                                Duration="0:0:0.1"/>
                                         </Storyboard>
                                     </VisualState>
 
                                 </VisualStateGroup>
+
                             </VisualStateManager.VisualStateGroups>
+
                         </Grid>
+
                     </ControlTemplate>
+
                 </Setter.Value>
             </Setter>
 
@@ -107,19 +137,31 @@
 
     </UserControl.Resources>
 
+
+
+    <!-- Main layout container -->
     <Grid Background="#F4F2EF">
+
+        <!-- Outer browser frame -->
         <Border
             Margin="4"
             CornerRadius="7"
             BorderBrush="#D6D3CE"
             BorderThickness="1">
+
             <Grid>
+
+                <!-- Layout rows -->
                 <Grid.RowDefinitions>
+                    <!-- Top navigation bar -->
                     <RowDefinition Height="43"/>
+                    <!-- Web content area -->
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                
-                <!-- Top Bar -->
+
+
+
+                <!-- Top navigation bar -->
                 <Grid
                     Background="#fdfcf9"
                     BorderBrush="#D6D3CE"
@@ -133,61 +175,114 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
+
+
                     <!-- Navigation buttons -->
                     <StackPanel
-                            Grid.Column="0"
-                            Orientation="Horizontal"
-                            Spacing="0">
+                        Grid.Column="0"
+                        Orientation="Horizontal"
+                        Spacing="0">
 
-                        <Button x:Name="BackButton"
-                                Style="{StaticResource NavIconButtonStyle}"
-                                IsEnabled="False">
-                            <Image Source="/Assets/Icons/angle-small-left.svg"
+                        <!-- Back -->
+                        <Button
+                            x:Name="BackButton"
+                            Style="{StaticResource NavIconButtonStyle}"
+                            IsEnabled="False">
+                            <Image
+                                Source="/Assets/Icons/angle-small-left.svg"
                                 Width="15"
                                 Height="15"/>
                         </Button>
 
-                        <Button x:Name="ForwardButton"
-                                Style="{StaticResource NavIconButtonStyle}"
-                                IsEnabled="False">
-                            <Image Source="/Assets/Icons/angle-small-right.svg"
+                        <!-- Forward -->
+                        <Button
+                            x:Name="ForwardButton"
+                            Style="{StaticResource NavIconButtonStyle}"
+                            IsEnabled="False">
+                            <Image
+                                Source="/Assets/Icons/angle-small-right.svg"
                                 Width="15"
                                 Height="15"/>
                         </Button>
 
-                        <Button x:Name="ReloadButton"
-                                Style="{StaticResource NavIconButtonStyle}">
-                            <Image Source="/Assets/Icons/rotate-right.svg"
-                                Width="11"
-                                Height="11"/>
+                        <!-- Reload / Stop -->
+                        <Button x:Name="ReloadButton" Style="{StaticResource NavIconButtonStyle}">
+
+                            <Grid>
+
+                                <!-- Reload icon with rotation animation -->
+                                <Image
+                                    x:Name="ReloadIcon"
+                                    Source="/Assets/Icons/rotate-right.svg"
+                                    Width="11"
+                                    Height="11"
+                                    RenderTransformOrigin="0.5,0.5">
+
+                                    <Image.RenderTransform>
+                                        <RotateTransform x:Name="ReloadRotate"/>
+                                    </Image.RenderTransform>
+
+                                    <!-- Reload animation -->
+                                    <Image.Resources>
+                                        <Storyboard x:Name="ReloadAnimation">
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ReloadRotate"
+                                                Storyboard.TargetProperty="Angle"
+                                                From="0"
+                                                To="360"
+                                                Duration="0:0:1"
+                                                RepeatBehavior="Forever"/>
+                                        </Storyboard>
+                                    </Image.Resources>
+
+                                </Image>
+
+                                <!-- Stop icon shown during loading -->
+                                <Image
+                                    x:Name="StopIcon"
+                                    Source="/Assets/Icons/cross.svg"
+                                    Width="10"
+                                    Height="10"
+                                    Visibility="Collapsed"/>
+
+                            </Grid>
+
                         </Button>
 
                     </StackPanel>
 
+
+
                     <!-- URL bar -->
                     <Grid
-                            x:Name="UrlBarContainer"
-                            Grid.Column="1"
-                            Background="#fdfcf9"
-                            BorderBrush="#fdfcf9"
-                            BorderThickness="1"
-                            CornerRadius="6"
-                            Padding="5">
+                        x:Name="UrlBarContainer"
+                        Grid.Column="1"
+                        Background="#fdfcf9"
+                        BorderBrush="#fdfcf9"
+                        BorderThickness="1"
+                        CornerRadius="6"
+                        Padding="5">
 
                         <Grid ColumnSpacing="1">
+
                             <Grid.ColumnDefinitions>
+                                <!-- Favicon -->
                                 <ColumnDefinition Width="Auto"/>
+                                <!-- URL textbox -->
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Favicon placeholder -->
-                            <Image
-                                x:Name="FaviconImage"  
-                                Stretch="UniformToFill" 
-                                VerticalAlignment="Center"      
-                                />
 
-                            <!-- URL TextBox -->
+
+                            <!-- Website favicon -->
+                            <Image
+                                x:Name="FaviconImage"
+                                Stretch="UniformToFill"
+                                VerticalAlignment="Center"/>
+
+
+
+                            <!-- Address bar -->
                             <TextBox
                                 x:Name="UrlBox"
                                 Grid.Column="1"
@@ -197,69 +292,153 @@
                                 PlaceholderText=""
                                 IsSpellCheckEnabled="False"
                                 FocusVisualMargin="0"
-                                UseSystemFocusVisuals="False"/>
+                                UseSystemFocusVisuals="False"
+                                FontFamily="ms-appx:///Assets/Fonts/substance-lightitalic.otf#FSP DEMO - Substance Light"/>
+
                         </Grid>
+
                     </Grid>
 
 
-                    <!-- Future actions -->
+
+                    <!-- Right side controls -->
                     <StackPanel
                         Grid.Column="2"
                         Orientation="Horizontal"
                         Spacing="4">
 
-                        <Button Content="Assistant" Width="100" Click="AssistantButton_Click"/>
-                        <Button Content="⋮" Width="30"/>
+                        <!-- Assistant button -->
+                        <Button
+                            Content="Assistant"
+                            Width="100"
+                            FontFamily="ms-appx:///Assets/Fonts/substance-lightitalic.otf#FSP DEMO - Substance Light"
+                            Click="AssistantButton_Click"/>
+
+                        <!-- Menu button -->
+                        <Button Content="⋮" Width="30">
+
+                            <Button.Flyout>
+
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+
+                                    <MenuFlyoutItem Text="Search tabs" Icon="Find">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Key="A" Modifiers="Control,Shift"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+
+                                    <MenuFlyoutItem Text="New tab" Icon="Add">
+                                        <MenuFlyoutItem.KeyboardAccelerators>
+                                            <KeyboardAccelerator Key="T" Modifiers="Control"/>
+                                        </MenuFlyoutItem.KeyboardAccelerators>
+                                    </MenuFlyoutItem>
+
+                                    <MenuFlyoutSeparator/>
+
+                                    <!-- Signed in user -->
+                                    <MenuFlyoutItem Text="Hariom Jangra (Signed in)">
+                                        <MenuFlyoutItem.Icon>
+                                            <FontIcon Glyph="&#xE77B;"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+
+                                    <MenuFlyoutSeparator/>
+
+                                    <MenuFlyoutItem Text="Extensions" Icon="OutlineStar"/>
+
+                                    <!-- Settings -->
+                                    <MenuFlyoutItem Text="Settings" Click="Settings_Click">
+                                        <MenuFlyoutItem.Icon>
+                                            <SymbolIcon Symbol="Setting"/>
+                                        </MenuFlyoutItem.Icon>
+                                    </MenuFlyoutItem>
+
+                                    <MenuFlyoutSeparator/>
+
+                                    <!-- Developer tools -->
+                                    <MenuFlyoutSubItem Text="More tools" Icon="Repair">
+                                        <MenuFlyoutItem Text="Task Manager"/>
+                                        <MenuFlyoutItem Text="Developer Tools"/>
+                                    </MenuFlyoutSubItem>
+
+                                </MenuFlyout>
+
+                            </Button.Flyout>
+
+                        </Button>
 
                     </StackPanel>
 
                 </Grid>
 
+
+
+                <!-- Main browser area -->
                 <Grid Grid.Row="1" Background="#fdfcf9">
 
                     <Grid.ColumnDefinitions>
+                        <!-- Main web content -->
                         <ColumnDefinition x:Name="WebColumn" Width="*"/>
+                        <!-- Splitter -->
                         <ColumnDefinition x:Name="SplitterColumn" Width="Auto"/>
+                        <!-- Assistant panel -->
                         <ColumnDefinition x:Name="AssistantColumn" Width="0"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- WebView -->
-                    <WebView2 x:Name="WebView"
-              Grid.Column="0"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch"/>
 
-                    <!-- GridSplitter -->
-                    <Border x:Name="GridSplitterBorder"
-            Grid.Column="1"
-            Width="5"
-            Background="Transparent"
-            Visibility="Collapsed">
-        <Rectangle Fill="#D6D3CE" 
-                   Width="1"
-                   HorizontalAlignment="Center"/>
-    </Border>
 
-                    <!-- Assistant Panel -->
-                    <Grid x:Name="AssistantPanel"
-                            Grid.Column="2"
-                            Background="#F8F6F2">
+                    <!-- Primary WebView -->
+                    <WebView2
+                        x:Name="WebView"
+                        Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"/>
 
-                        <Border BorderBrush="#D6D3CE"
-                                BorderThickness="1,0,0,0">
-                            <WebView2 x:Name="AssistantWebView"
-                                    Source="http://localhost:5050/" 
-                                    HorizontalAlignment="Stretch" 
-                                    VerticalAlignment="Stretch"
-                                    />
+
+
+                    <!-- Splitter line -->
+                    <Border
+                        x:Name="GridSplitterBorder"
+                        Grid.Column="1"
+                        Width="5"
+                        Background="Transparent"
+                        Visibility="Collapsed">
+
+                        <Rectangle
+                            Fill="#D6D3CE"
+                            Width="1"
+                            HorizontalAlignment="Center"/>
+
+                    </Border>
+
+
+
+                    <!-- Assistant side panel -->
+                    <Grid
+                        x:Name="AssistantPanel"
+                        Grid.Column="2"
+                        Background="#F8F6F2">
+
+                        <Border
+                            BorderBrush="#D6D3CE"
+                            BorderThickness="1,0,0,0">
+
+                            <WebView2
+                                x:Name="AssistantWebView"
+                                Source="http://localhost:5050/"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"/>
+
                         </Border>
+
                     </Grid>
 
                 </Grid>
 
             </Grid>
+
         </Border>
+
     </Grid>
-    
-    
+
 </UserControl>

@@ -47,13 +47,18 @@ namespace winrt::Agentic_Browser::implementation
                 }
             });
 
-        // Reload page
+        // Reload (reload or stop)
         ReloadButton().Click([weak_this = get_weak()](auto const&, auto const&)
             {
                 if (auto self = weak_this.get())
                 {
                     if (auto core = self->WebView().CoreWebView2())
-                        core.Reload();
+                    {
+                        if (self->m_isLoading)
+                            core.Stop();
+                        else
+                            core.Reload();
+                    }
                 }
             });
 
@@ -193,13 +198,13 @@ namespace winrt::Agentic_Browser::implementation
                 if (auto self = weak_this.get())
                 {
                     OutputDebugString(L"✓ Assistant WebView2 initialized!\n");
-                    
+
                     if (auto core = self->AssistantWebView().CoreWebView2())
                     {
                         auto settings = core.Settings();
                         settings.IsScriptEnabled(true);
                         settings.AreDevToolsEnabled(true);
-                        
+
                         OutputDebugString(L"✓ Navigating to localhost:5050\n");
                         core.Navigate(L"http://localhost:5050/");
                     }
@@ -218,7 +223,7 @@ namespace winrt::Agentic_Browser::implementation
                             Microsoft::UI::ColorHelper::FromArgb(255, 32, 128, 221)
                         ));
                     }
-                    
+
                     if (self->WebView().CoreWebView2())
                     {
                         auto uriStr = self->WebView().Source().AbsoluteUri();
@@ -263,7 +268,7 @@ namespace winrt::Agentic_Browser::implementation
                     if (!self->m_hoverTimer)
                     {
                         self->m_hoverTimer = Microsoft::UI::Xaml::DispatcherTimer();
-                        self->m_hoverTimer.Interval(std::chrono::milliseconds(100)); // 0.5 second delay
+                        self->m_hoverTimer.Interval(std::chrono::milliseconds(100)); // 0.1 second delay
                     }
 
                     // Set up the timer tick event
@@ -280,7 +285,7 @@ namespace winrt::Agentic_Browser::implementation
                                     if (self->UrlBox().FocusState() == FocusState::Unfocused)
                                     {
                                         auto uriStr = self->WebView().Source().AbsoluteUri();
-                                        
+
                                         // Show "Enter address" for home page, show full URL for others
                                         if (uriStr == HOME_PAGE_URL)
                                         {
@@ -331,7 +336,7 @@ namespace winrt::Agentic_Browser::implementation
                             Microsoft::UI::ColorHelper::FromArgb(255, 253, 252, 249)  // #fdfcf9
                         ));
                     }
-                    
+
                     self->UpdateUrlBarFromWebView();
                 }
             });
@@ -345,6 +350,51 @@ namespace winrt::Agentic_Browser::implementation
                     self->UpdateUrlBarFromWebView();
                 }
             });
+    }
+
+    void BrowserView::UpdateReloadIcon()
+    {
+        if (m_isLoading)
+        {
+            ReloadIcon().Source(Microsoft::UI::Xaml::Media::Imaging::SvgImageSource(
+                Windows::Foundation::Uri(L"ms-appx:///Assets/Icons/icons8-close.svg")));
+        }
+        else
+        {
+            ReloadIcon().Source(Microsoft::UI::Xaml::Media::Imaging::SvgImageSource(
+                Windows::Foundation::Uri(L"ms-appx:///Assets/Icons/rotate-right.svg")));
+        }
+    }
+
+    void BrowserView::StartReloadAnimation()
+    {
+        StopReloadAnimation();
+
+        using namespace Microsoft::UI::Xaml::Media::Animation;
+
+        DoubleAnimation rotate{};
+        rotate.From(0.0);
+        rotate.To(360.0);
+        rotate.Duration(DurationHelper::FromTimeSpan(std::chrono::milliseconds(900)));
+        rotate.RepeatBehavior(RepeatBehavior{ 1000 });
+
+        Storyboard storyboard{};
+        storyboard.Children().Append(rotate);
+
+        Storyboard::SetTarget(rotate, ReloadRotate());
+        Storyboard::SetTargetProperty(rotate, L"Angle");
+
+        storyboard.Begin();
+
+        m_reloadStoryboard = storyboard;
+    }
+
+    void BrowserView::StopReloadAnimation()
+    {
+        if (m_reloadStoryboard)
+            m_reloadStoryboard.Stop();
+
+        ReloadRotate().Angle(0);
     }
 
     void BrowserView::UpdateUrlBarFromWebView()
@@ -403,10 +453,33 @@ namespace winrt::Agentic_Browser::implementation
         auto core = WebView().CoreWebView2();
         if (!core) return;
 
+        core.NavigationStarting([weak_this = get_weak()](auto&&, auto&&)
+            {
+                if (auto self = weak_this.get())
+                {
+                    self->m_isLoading = true;
+                    self->UpdateReloadIcon(); // Change to X
+                    self->StartReloadAnimation();
+                }
+            });
+
         core.SourceChanged([weak_this = get_weak()](auto&&, auto&&)
             {
                 if (auto self = weak_this.get())
                     self->UpdateUrlBarFromWebView();
+            });
+
+        core.NavigationCompleted([weak_this = get_weak()](auto&&, auto&&)
+            {
+                if (auto self = weak_this.get())
+                {
+                    //// RELOAD FEATURE
+                    self->m_isLoading = false;
+                    self->UpdateReloadIcon(); // Revert to rotate-right
+                    self->StopReloadAnimation();
+
+                    self->UpdateNavigationButtonStates();
+                }
             });
 
         core.DocumentTitleChanged(
@@ -450,14 +523,6 @@ namespace winrt::Agentic_Browser::implementation
                 }
             });
 
-        core.NavigationCompleted([weak_this = get_weak()](auto&&, auto&&)
-            {
-                if (auto self = weak_this.get())
-                {
-                    self->UpdateNavigationButtonStates();
-                }
-            });
-        
         core.HistoryChanged([weak_this = get_weak()](auto&&, auto&&)
             {
                 if (auto self = weak_this.get())
@@ -537,6 +602,7 @@ namespace winrt::Agentic_Browser::implementation
             ForwardButton().IsEnabled(false);
         }
     }
+
     void BrowserView::Cleanup()
     {
         try
@@ -568,7 +634,7 @@ namespace winrt::Agentic_Browser::implementation
             // Show assistant panel
             AssistantColumn().Width(GridLengthHelper::FromValueAndType(350, GridUnitType::Pixel));
             GridSplitterBorder().Visibility(Visibility::Visible);
-            
+
             // Add splitter interaction handlers
             GridSplitterBorder().PointerPressed({ this, &BrowserView::OnSplitterPointerPressed });
             GridSplitterBorder().PointerMoved({ this, &BrowserView::OnSplitterPointerMoved });
@@ -620,6 +686,13 @@ namespace winrt::Agentic_Browser::implementation
         auto border = sender.as<winrt::Microsoft::UI::Xaml::Controls::Border>();
         border.ReleasePointerCapture(e.Pointer());
         m_isDragging = false;
+    }
+
+    void BrowserView::Settings_Click(
+        winrt::Windows::Foundation::IInspectable const& sender,
+        winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
+    {
+        m_newTabRequestedEvent(*this, L"settings://");
     }
 
 }
