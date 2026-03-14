@@ -9,28 +9,120 @@
     mc:Ignorable="d"
     Title="Agentic Browser">
 
-    
-
     <Grid Background="#d3e3fd">
         <TabView x:Name="Tabs"
-         Background="#E8F0FE"
+         FontFamily="Raleway"
+         Background="#f4f2ef"
          VerticalAlignment="Stretch"
          AddTabButtonClick="TabView_AddTabButtonClick"
          TabCloseRequested="TabView_TabCloseRequested"
          CanReorderTabs="True"
          CanDragTabs="True">
+
             <TabView.Resources>
-                <SolidColorBrush x:Key="TabViewItemHeaderBackgroundSelected" Color="#F4F2EF"/>
-                <SolidColorBrush x:Key="TabViewItemHeaderForegroundSelected" Color="Black"/>
-                <SolidColorBrush x:Key="TabViewTrackBackground" Color="#FFEEEEEE"/>
+                <SolidColorBrush x:Key="TabViewTrackBackground" Color="Transparent"/>
+                <SolidColorBrush x:Key="TabViewBorderBrush" Color="Transparent" />
+                <Thickness x:Key="TabViewHeaderPadding">0,2,0,0</Thickness>
+
+                <Style TargetType="TabViewItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="TabViewItem">
+                                <Grid Margin="2,2,2,0" Background="Transparent" MinHeight="34">
+
+                                    <Border x:Name="PillBorder" 
+                                            Background="Transparent"
+                                            CornerRadius="8" 
+                                            BorderThickness="1"
+                                            BorderBrush="Transparent">
+
+                                        <Grid Padding="10,0,4,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <IconSourceElement x:Name="IconControl"
+                                                               IconSource="{TemplateBinding IconSource}"
+                                                               VerticalAlignment="Center" 
+                                                               Margin="0,0,8,0"
+                                                               Width="16" Height="16"/>
+
+                                            <ContentPresenter x:Name="HeaderPresenter"
+                                                              Grid.Column="1"
+                                                              Content="{TemplateBinding Header}"
+                                                              ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                              VerticalAlignment="Center"
+                                                              HorizontalAlignment="Stretch"
+                                                              FontSize="12" />
+
+                                            <Button x:Name="CloseButton"
+                                                    Grid.Column="2"
+                                                    Margin="4,0,0,0"
+                                                    Width="28" Height="28"
+                                                    Padding="0"
+                                                    Background="Transparent"
+                                                    BorderThickness="0"
+                                                    VerticalAlignment="Center"
+                                                    CornerRadius="4">
+                                                <FontIcon Glyph="&#xE711;" FontFamily="Segoe Fluent Icons" FontSize="10" />
+                                            </Button>
+                                        </Grid>
+                                    </Border>
+
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Target="PillBorder.Background" Value="Transparent" />
+                                                    <Setter Target="PillBorder.BorderBrush" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="PointerOver">
+                                                <VisualState.Setters>
+                                                    <Setter Target="PillBorder.Background" Value="#E0E8F5" />
+                                                    <Setter Target="PillBorder.BorderBrush" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <VisualState.Setters>
+                                                    <Setter Target="PillBorder.Background" Value="#D0D8E5" />
+                                                    <Setter Target="PillBorder.BorderBrush" Value="Transparent" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+
+                                            <VisualState x:Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Target="PillBorder.Background" Value="#fffefb" />
+                                                    <Setter Target="PillBorder.BorderBrush" Value="#D2D2D2" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="PointerOverSelected">
+                                                <VisualState.Setters>
+                                                    <Setter Target="PillBorder.Background" Value="#fffefb" />
+                                                    <Setter Target="PillBorder.BorderBrush" Value="#D2D2D2" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="PressedSelected">
+                                                <VisualState.Setters>
+                                                    <Setter Target="PillBorder.Background" Value="#fffefb" />
+                                                    <Setter Target="PillBorder.BorderBrush" Value="#D2D2D2" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
             </TabView.Resources>
 
             <TabView.TabStripFooter>
                 <Grid x:Name="DragRegion" Background="Transparent" MinWidth="180"/>
             </TabView.TabStripFooter>
         </TabView>
-        
-
     </Grid>
-    
 </Window>

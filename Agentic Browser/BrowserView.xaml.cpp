@@ -1,4 +1,4 @@
-﻿#include "pch.h"
+#include "pch.h"
 #include "BrowserView.xaml.h"
 
 #if __has_include("BrowserView.g.cpp")
@@ -220,7 +220,7 @@ namespace winrt::Agentic_Browser::implementation
                     if (auto container = self->UrlBarContainer())
                     {
                         container.BorderBrush(Media::SolidColorBrush(
-                            Microsoft::UI::ColorHelper::FromArgb(255, 32, 128, 221)
+                            Microsoft::UI::ColorHelper::FromArgb(255, 32, 128, 141)
                         ));
                     }
 
@@ -458,7 +458,7 @@ namespace winrt::Agentic_Browser::implementation
                 if (auto self = weak_this.get())
                 {
                     self->m_isLoading = true;
-                    self->UpdateReloadIcon(); // Change to X
+                    self->UpdateReloadIcon();
                     self->StartReloadAnimation();
                 }
             });
@@ -473,9 +473,9 @@ namespace winrt::Agentic_Browser::implementation
             {
                 if (auto self = weak_this.get())
                 {
-                    //// RELOAD FEATURE
+                   
                     self->m_isLoading = false;
-                    self->UpdateReloadIcon(); // Revert to rotate-right
+                    self->UpdateReloadIcon();
                     self->StopReloadAnimation();
 
                     self->UpdateNavigationButtonStates();
@@ -498,15 +498,57 @@ namespace winrt::Agentic_Browser::implementation
                 if (auto self = weak_this.get())
                 {
                     auto uri = sender.FaviconUri();
+
                     if (!uri.empty())
                     {
-                        auto bitmap =
-                            Media::Imaging::BitmapImage(
-                                Windows::Foundation::Uri(uri)
-                            );
+                        Windows::Foundation::Uri winrtUri(uri);
+                        std::wstring uriStr{ uri };
 
-                        self->FaviconImage().Source(bitmap);
+                        // Check if the favicon is an SVG
+                        if (uriStr.length() >= 4 && uriStr.substr(uriStr.length() - 4) == L".svg")
+                        {
+                            auto svgImage = Media::Imaging::SvgImageSource(winrtUri);
+                            self->FaviconImage().Source(svgImage);
+                        }
+                        else
+                        {
+                            // Handle standard ICO/PNG/JPG files
+                            auto bitmap = Media::Imaging::BitmapImage(winrtUri);
+                            self->FaviconImage().Source(bitmap);
+                        }
+
                         self->m_faviconChangedEvent(*self, uri);
+                    }
+                    else
+                    {
+                        // Fallback logic: Try to fetch /favicon.ico from the root domain
+                        try
+                        {
+                            // Grab the current webpage URL. 
+                            // Note: Adjust "sender.Source()" if your specific wrapper uses a 
+                            // different method/property to get the current page's URL.
+                            auto currentUrl = sender.Source();
+
+                            if (!currentUrl.empty())
+                            {
+                                Windows::Foundation::Uri currentUri(currentUrl);
+
+                                // Construct the fallback: scheme://host/favicon.ico (e.g., https://example.com/favicon.ico)
+                                std::wstring fallbackStr = std::wstring(currentUri.SchemeName()) + L"://" +
+                                    std::wstring(currentUri.Host()) + L"/favicon.ico";
+
+                                Windows::Foundation::Uri fallbackUri(fallbackStr);
+                                auto bitmap = Media::Imaging::BitmapImage(fallbackUri);
+
+                                self->FaviconImage().Source(bitmap);
+                                self->m_faviconChangedEvent(*self, fallbackStr);
+                            }
+                        }
+                        catch (...)
+                        {
+                            // Fail silently if the URI is invalid, a local file, 
+                            // or a special page (like about:blank) that has no host.
+                        }
                     }
                 }
             });
@@ -692,7 +734,7 @@ namespace winrt::Agentic_Browser::implementation
         winrt::Windows::Foundation::IInspectable const& sender,
         winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
     {
-        m_newTabRequestedEvent(*this, L"settings://");
+        m_newTabRequestedEvent(*this, L"edge://settings");
     }
 
 }

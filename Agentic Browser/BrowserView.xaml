@@ -278,6 +278,8 @@
                             <Image
                                 x:Name="FaviconImage"
                                 Stretch="UniformToFill"
+                                Width="16"
+                                Height="16"
                                 VerticalAlignment="Center"/>
 
 
@@ -311,7 +313,7 @@
                         <Button
                             Content="Assistant"
                             Width="100"
-                            FontFamily="ms-appx:///Assets/Fonts/substance-lightitalic.otf#FSP DEMO - Substance Light"
+                            FontFamily="Inter"
                             Click="AssistantButton_Click"/>
 
                         <!-- Menu button -->

@@ -16,6 +16,7 @@ namespace winrt::Agentic_Browser::implementation
         void StopReloadAnimation();
         void UpdateReloadIcon();
 
+
         bool m_isAssistantOpen{ false };
         bool m_isLoading{ false };
         Microsoft::UI::Xaml::Media::Animation::Storyboard m_reloadStoryboard{ nullptr };
