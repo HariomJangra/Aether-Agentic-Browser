@@ -32,6 +32,14 @@ namespace winrt::Agentic_Browser::implementation
             winrt::Windows::Foundation::IInspectable const& sender,
             winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
+        void UrlBarContainer_PointerEntered(
+            winrt::Windows::Foundation::IInspectable const& sender,
+            winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+
+        void UrlBarContainer_PointerExited(
+            winrt::Windows::Foundation::IInspectable const& sender,
+            winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+
         // --- Event Registrations ---
 
         // --- NEW: Added for Hover Cards ---
@@ -89,8 +97,8 @@ namespace winrt::Agentic_Browser::implementation
 
         winrt::hstring m_pendingNavigationUrl;
 
-        // Timer for URL hover delay
-        Microsoft::UI::Xaml::DispatcherTimer m_hoverTimer{ nullptr };
+        // Short-delay timer for URL bar hover (prevents flicker on fast mouse pass-through)
+        Microsoft::UI::Xaml::DispatcherTimer m_urlBarHoverTimer{ nullptr };
 
         // Assistant panel drag state
         bool m_isDragging{ false };

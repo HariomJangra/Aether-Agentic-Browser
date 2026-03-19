@@ -259,80 +259,23 @@ namespace winrt::Agentic_Browser::implementation
                 }
             });
 
-        // Show actual URL on hover (with delay)
-        UrlBox().PointerEntered([weak_this = get_weak()](auto const&, auto const&)
-            {
-                if (auto self = weak_this.get())
-                {
-                    // Create timer if not exists
-                    if (!self->m_hoverTimer)
-                    {
-                        self->m_hoverTimer = Microsoft::UI::Xaml::DispatcherTimer();
-                        self->m_hoverTimer.Interval(std::chrono::milliseconds(100)); // 0.1 second delay
-                    }
-
-                    // Set up the timer tick event
-                    self->m_hoverTimer.Tick([weak_this](auto const&, auto const&)
-                        {
-                            if (auto self = weak_this.get())
-                            {
-                                // Stop the timer
-                                self->m_hoverTimer.Stop();
-
-                                if (self->WebView().CoreWebView2())
-                                {
-                                    // Show actual URL when hovering (only if not focused)
-                                    if (self->UrlBox().FocusState() == FocusState::Unfocused)
-                                    {
-                                        auto uriStr = self->WebView().Source().AbsoluteUri();
-
-                                        // Show "Enter address" for home page, show full URL for others
-                                        if (uriStr == HOME_PAGE_URL)
-                                        {
-                                            self->UrlBox().Text(L"Ask Anything...");
-                                        }
-                                        else
-                                        {
-                                            self->UrlBox().Text(uriStr);
-                                        }
-                                    }
-                                }
-                            }
-                        });
-
-                    // Start the timer
-                    self->m_hoverTimer.Start();
-                }
-            });
-
-        // Restore display text when not hovering
-        UrlBox().PointerExited([weak_this = get_weak()](auto const&, auto const&)
-            {
-                if (auto self = weak_this.get())
-                {
-                    // Cancel the timer if user moves away before delay completes
-                    if (self->m_hoverTimer && self->m_hoverTimer.IsEnabled())
-                    {
-                        self->m_hoverTimer.Stop();
-                    }
-
-                    // Only restore if not focused
-                    if (self->UrlBox().FocusState() == FocusState::Unfocused)
-                    {
-                        self->UpdateUrlBarFromWebView();
-                    }
-                }
-            });
+        // (URL display on hover is now handled synchronously in
+        //  UrlBarContainer_PointerEntered / PointerExited below)
 
         // Restore display text on blur
         UrlBox().LosingFocus([weak_this = get_weak()](auto const&, auto const&)
             {
                 if (auto self = weak_this.get())
                 {
-                    // Restore border to background color when unfocused
+                    // Restore border colour
                     if (auto container = self->UrlBarContainer())
                     {
                         container.BorderBrush(Media::SolidColorBrush(
+                            Microsoft::UI::ColorHelper::FromArgb(255, 253, 252, 249)  // #fdfcf9
+                        ));
+                        // Also restore background – PointerEntered may have tinted it
+                        // while the bar was already focused (or about to be)
+                        container.Background(Media::SolidColorBrush(
                             Microsoft::UI::ColorHelper::FromArgb(255, 253, 252, 249)  // #fdfcf9
                         ));
                     }
@@ -653,11 +596,11 @@ namespace winrt::Agentic_Browser::implementation
     {
         try
         {
-            // Stop the hover timer if running
-            if (m_hoverTimer)
+            // Stop hover timer if running
+            if (m_urlBarHoverTimer)
             {
-                m_hoverTimer.Stop();
-                m_hoverTimer = nullptr;
+                m_urlBarHoverTimer.Stop();
+                m_urlBarHoverTimer = nullptr;
             }
 
             // Stop any media playback and close the WebView2
@@ -758,6 +701,64 @@ namespace winrt::Agentic_Browser::implementation
         else
         {
             core.OpenDefaultDownloadDialog();
+        }
+    }
+
+    void BrowserView::UrlBarContainer_PointerEntered(
+        winrt::Windows::Foundation::IInspectable const&,
+        winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const&)
+    {
+        if (UrlBox().FocusState() != FocusState::Unfocused) return;
+
+        // Create timer once
+        if (!m_urlBarHoverTimer)
+        {
+            m_urlBarHoverTimer = Microsoft::UI::Xaml::DispatcherTimer();
+            m_urlBarHoverTimer.Interval(std::chrono::milliseconds(80));
+        }
+
+        // (Re-)attach tick every time so the weak_this capture is fresh
+        m_urlBarHoverTimer.Tick([weak_this = get_weak()](auto const&, auto const&)
+            {
+                if (auto self = weak_this.get())
+                {
+                    self->m_urlBarHoverTimer.Stop();
+
+                    if (self->UrlBox().FocusState() != FocusState::Unfocused) return;
+
+                    // Apply tint + show full URL together
+                    self->UrlBarContainer().Background(Media::SolidColorBrush(
+                        Microsoft::UI::ColorHelper::FromArgb(255, 244, 242, 239)  // #f4f2ef
+                    ));
+
+                    if (self->WebView().CoreWebView2())
+                    {
+                        auto uriStr = self->WebView().Source().AbsoluteUri();
+                        self->UrlBox().Text(
+                            uriStr == HOME_PAGE_URL ? L"Ask Anything..." : winrt::hstring{ uriStr }
+                        );
+                    }
+                }
+            });
+
+        m_urlBarHoverTimer.Start();
+    }
+
+    void BrowserView::UrlBarContainer_PointerExited(
+        winrt::Windows::Foundation::IInspectable const&,
+        winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const&)
+    {
+        // Cancel any pending enter-delay so fast pass-throughs never flash
+        if (m_urlBarHoverTimer && m_urlBarHoverTimer.IsEnabled())
+            m_urlBarHoverTimer.Stop();
+
+        // Restore immediately
+        if (UrlBox().FocusState() == FocusState::Unfocused)
+        {
+            UrlBarContainer().Background(Media::SolidColorBrush(
+                Microsoft::UI::ColorHelper::FromArgb(255, 253, 252, 249)  // #fdfcf9
+            ));
+            UpdateUrlBarFromWebView();
         }
     }
 
