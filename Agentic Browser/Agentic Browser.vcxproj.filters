@@ -204,6 +204,7 @@
     <None Include="Assets\Icons\bookmark.svg" />
     <None Include="Assets\Icons\chain.svg" />
     <None Include="Assets\Icons\equalizer.svg" />
+    <None Include="Assets\Icons\dots.svg" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />

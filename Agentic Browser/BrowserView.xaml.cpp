@@ -13,6 +13,7 @@
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Animation.h>
 #include <winrt/Microsoft.UI.Input.h>
+#include <winrt/Windows.ApplicationModel.DataTransfer.h>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -762,4 +763,35 @@ namespace winrt::Agentic_Browser::implementation
         }
     }
 
+    void BrowserView::NewTab_Click(
+        IInspectable const&,
+        RoutedEventArgs const&)
+    {   
+        m_newTabRequestedEvent(*this, HOME_PAGE_URL);
+    }
+
+    void BrowserView::CopyURL_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        auto core = WebView().CoreWebView2();
+
+        if (core) {
+            auto uri = core.Source();
+
+            // Copy to Clipboard
+            Windows::ApplicationModel::DataTransfer::DataPackage dataPackage;
+            dataPackage.SetText(uri);
+
+            Windows::ApplicationModel::DataTransfer::Clipboard::SetContent(dataPackage);
+        }
+    }
+
+    void BrowserView::AddBookmark_Click(IInspectable const&, RoutedEventArgs const&) 
+    {
+        // To be Implemented
+    }
+
+    void BrowserView::ViewSiteInfo_Click(IInspectable const&, RoutedEventArgs const&) 
+    {
+        // To be Implemented
+    }
 }

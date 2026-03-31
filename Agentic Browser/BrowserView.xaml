@@ -229,15 +229,15 @@
                                         Spacing="4"
                                         VerticalAlignment="Center">
 
-                                <Button Style="{StaticResource NavIconButtonStyle}">
+                                <Button Style="{StaticResource NavIconButtonStyle}" Click="CopyURL_Click">
+                                    <Image Source="/Assets/Icons/chain.svg" Width="14" Height="14"/>
+                                </Button>
+                                
+                                <Button Style="{StaticResource NavIconButtonStyle}" Click="AddBookmark_Click">
                                     <Image Source="/Assets/Icons/bookmark.svg" Width="14" Height="14"/>
                                 </Button>
 
-                                <Button Style="{StaticResource NavIconButtonStyle}">
-                                    <Image Source="/Assets/Icons/chain.svg" Width="14" Height="14"/>
-                                </Button>
-
-                                <Button Style="{StaticResource NavIconButtonStyle}">
+                                <Button Style="{StaticResource NavIconButtonStyle}" Click="ViewSiteInfo_Click">
                                     <Image Source="/Assets/Icons/equalizer.svg" Width="14" Height="14"/>
                                 </Button>
 
@@ -259,7 +259,7 @@
                         <Button Style="{StaticResource NavIconButtonStyle}"
                                 Padding="4"
                                 Click="ToggleDownloadButton_Click">
-                            <Image Source="/Assets/Icons/download.svg" Width="14" Height="14"/>
+                            <Image Source="/Assets/Icons/download.svg" Width="12" Height="12"/>
                         </Button>
 
                         <Border Width="1" Height="18"
@@ -288,14 +288,20 @@
                                 Padding="6,2"
                                 FontFamily="Funnel Sans">
                             <StackPanel Orientation="Horizontal" Spacing="5">
-                                <Image Source="/Assets/Icons/profile.svg" Width="14" Height="14"/>
+                                <!--<Image Source="/Assets/Icons/profile.svg" Width="14" Height="14"/>-->
                                 <TextBlock Text="Profile"
                                            Foreground="Black"
                                            VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
-                        <Button Content="⋮" Width="30">
+                        <Border Width="1" Height="18"
+                                Background="#D6D3CE"
+                                VerticalAlignment="Center"/>
+
+                        <Button Width="30"
+                                Style="{StaticResource NavIconButtonStyle}">
+                            <Image Source="/Assets/Icons/dots.svg" Width="12" Height="12"/>
                             <Button.Flyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
                                     <MenuFlyoutItem Text="Search tabs" Icon="Find">
@@ -303,7 +309,7 @@
                                             <KeyboardAccelerator Key="A" Modifiers="Control,Shift"/>
                                         </MenuFlyoutItem.KeyboardAccelerators>
                                     </MenuFlyoutItem>
-                                    <MenuFlyoutItem Text="New tab" Icon="Add">
+                                    <MenuFlyoutItem Text="New tab" Icon="Add" Click="NewTab_Click">
                                         <MenuFlyoutItem.KeyboardAccelerators>
                                             <KeyboardAccelerator Key="T" Modifiers="Control"/>
                                         </MenuFlyoutItem.KeyboardAccelerators>
