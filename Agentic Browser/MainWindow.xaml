@@ -71,8 +71,12 @@
                                             <TextBlock Grid.Row="1" Text="{TemplateBinding Tag}" FontSize="12" Foreground="#555555" Margin="0,2,0,10" TextTrimming="CharacterEllipsis" />
 
                                             <!-- Preview image -->
-                                            <Border x:Name="PreviewBorder" Grid.Row="2" Height="120" Background="#f4f2ef" CornerRadius="4" BorderBrush="#D2D2D2" BorderThickness="1">
-                                                <Image Stretch="UniformToFill" />
+                                            <Border x:Name="PreviewBorder" Grid.Row="2" Height="150" Background="#f4f2ef"
+                                                    CornerRadius="0,0,7,7"
+                                                    Margin="-12,0,-12,-12">
+                                                <Image Stretch="UniformToFill"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
                                             </Border>
                                         </Grid>
                                     </Popup>

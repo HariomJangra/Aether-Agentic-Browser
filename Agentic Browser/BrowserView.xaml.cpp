@@ -817,7 +817,6 @@ namespace winrt::Agentic_Browser::implementation
         Microsoft::UI::Xaml::Media::Imaging::BitmapImage img;
         img.DecodePixelWidth(780);
         co_await img.SetSourceAsync(stream);
-
         co_return img;
     }
 }
