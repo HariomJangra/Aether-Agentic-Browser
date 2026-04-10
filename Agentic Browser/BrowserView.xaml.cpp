@@ -788,16 +788,6 @@ namespace winrt::Agentic_Browser::implementation
         }
     }
 
-    void BrowserView::AddBookmark_Click(IInspectable const&, RoutedEventArgs const&) 
-    {
-        // To be Implemented
-    }
-
-    void BrowserView::ViewSiteInfo_Click(IInspectable const&, RoutedEventArgs const&) 
-    {
-        // To be Implemented
-    }
-
     winrt::Windows::Foundation::IAsyncOperation<Microsoft::UI::Xaml::Media::Imaging::BitmapImage>
         BrowserView::CapturePreviewAsync()
     {
@@ -821,5 +811,25 @@ namespace winrt::Agentic_Browser::implementation
         img.DecodePixelWidth(780);
         co_await img.SetSourceAsync(stream);
         co_return img;
+    }
+
+    void BrowserView::AddBookmark_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        // To be Implemented
+    }
+
+    void BrowserView::ViewSiteInfo_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        // To be Implemented
+    }
+
+    void BrowserView::BookmarkPage_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        m_newTabRequestedEvent(*this, L"edge://bookmarks");
+    }
+
+    void BrowserView::ExtensionsPage_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        m_newTabRequestedEvent(*this, L"edge://extensions");
     }
 }

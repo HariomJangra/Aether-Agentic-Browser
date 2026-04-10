@@ -304,11 +304,6 @@
                             <Image Source="/Assets/Icons/dots.svg" Width="12" Height="12"/>
                             <Button.Flyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                    <MenuFlyoutItem Text="Search tabs" Icon="Find">
-                                        <MenuFlyoutItem.KeyboardAccelerators>
-                                            <KeyboardAccelerator Key="A" Modifiers="Control,Shift"/>
-                                        </MenuFlyoutItem.KeyboardAccelerators>
-                                    </MenuFlyoutItem>
                                     <MenuFlyoutItem Text="New tab" Icon="Add" Click="NewTab_Click">
                                         <MenuFlyoutItem.KeyboardAccelerators>
                                             <KeyboardAccelerator Key="T" Modifiers="Control"/>
@@ -321,7 +316,8 @@
                                         </MenuFlyoutItem.Icon>
                                     </MenuFlyoutItem>
                                     <MenuFlyoutSeparator/>
-                                    <MenuFlyoutItem Text="Extensions" Icon="OutlineStar"/>
+                                    <MenuFlyoutItem Text="Bookmarks" Icon="OutlineStar" Click="BookmarkPage_Click"/>
+                                    <MenuFlyoutItem Text="Extensions" Icon="OutlineStar" Click="ExtensionsPage_Click"/>
                                     <MenuFlyoutItem Text="Settings" Click="Settings_Click">
                                         <MenuFlyoutItem.Icon>
                                             <SymbolIcon Symbol="Setting"/>

@@ -9,7 +9,6 @@ namespace Agentic_Browser
         void Cleanup();
         Windows.Foundation.IAsyncOperation<Microsoft.UI.Xaml.Media.Imaging.BitmapImage> CapturePreviewAsync();
 
-        //Microsoft.UI.Xaml.Controls.WebView2 WebView{ get; };
         event Windows.Foundation.TypedEventHandler<BrowserView, String> UrlChanged;
         event Windows.Foundation.TypedEventHandler<BrowserView, String> TitleChanged;
         event Windows.Foundation.TypedEventHandler<BrowserView, String> FaviconChanged;
