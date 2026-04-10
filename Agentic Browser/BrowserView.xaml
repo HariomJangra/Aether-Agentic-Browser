@@ -86,7 +86,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
+        
     </UserControl.Resources>
 
     <!-- Main layout -->
@@ -318,6 +318,8 @@
                                     <MenuFlyoutSeparator/>
                                     <MenuFlyoutItem Text="Bookmarks" Icon="OutlineStar" Click="BookmarkPage_Click"/>
                                     <MenuFlyoutItem Text="Extensions" Icon="OutlineStar" Click="ExtensionsPage_Click"/>
+                                    <MenuFlyoutItem Text="Downloads" Icon="OutlineStar" Click="DownloadsPage_Click"/>
+                                    <MenuFlyoutItem Text="History" Icon="OutlineStar" Click="HistoryPage_Click"/>
                                     <MenuFlyoutItem Text="Settings" Click="Settings_Click">
                                         <MenuFlyoutItem.Icon>
                                             <SymbolIcon Symbol="Setting"/>
@@ -350,6 +352,51 @@
                               Grid.Column="0"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"/>
+
+                    <!-- Bright Blue Inner Glow Overlay (Smooth) -->
+                    <Grid x:Name="GlowOverlay"
+                          Grid.Column="0"
+                          IsHitTestVisible="False"
+                          Opacity="0">
+                        <!-- Top Glow -->
+                        <Rectangle Height="40" VerticalAlignment="Top">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="#AA00BCD4" Offset="0.0"/>
+                                    <GradientStop Color="#0000BCD4" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <!-- Bottom Glow -->
+                        <Rectangle Height="40" VerticalAlignment="Bottom">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                                    <GradientStop Color="#AA00BCD4" Offset="0.0"/>
+                                    <GradientStop Color="#0000BCD4" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <!-- Left Glow -->
+                        <Rectangle Width="40" HorizontalAlignment="Left">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#AA00BCD4" Offset="0.0"/>
+                                    <GradientStop Color="#0000BCD4" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <!-- Right Glow -->
+                        <Rectangle Width="40" HorizontalAlignment="Right">
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="1,0" EndPoint="0,0">
+                                    <GradientStop Color="#AA00BCD4" Offset="0.0"/>
+                                    <GradientStop Color="#0000BCD4" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <!-- Crisp outer border -->
+                        <Border BorderThickness="3" BorderBrush="#FF00BCD4"/>
+                    </Grid>
 
                     <!-- Vertical splitter (shown when assistant is open) -->
                     <Border x:Name="GridSplitterBorder"

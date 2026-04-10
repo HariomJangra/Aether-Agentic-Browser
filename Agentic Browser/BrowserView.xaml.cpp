@@ -15,6 +15,13 @@
 #include <winrt/Microsoft.UI.Input.h>
 #include <winrt/Windows.ApplicationModel.DataTransfer.h>
 
+#include <winrt/Microsoft.UI.Xaml.Hosting.h>
+#include <winrt/Microsoft.UI.Composition.h>
+#include <winrt/Windows.UI.h>
+
+using namespace winrt::Microsoft::UI::Xaml::Hosting;
+using namespace winrt::Microsoft::UI::Composition;
+
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -28,6 +35,7 @@ namespace winrt::Agentic_Browser::implementation
     BrowserView::BrowserView()
     {
         InitializeComponent();
+        SetupGlowEffect();
 
         // Back navigation
         BackButton().Click([weak_this = get_weak()](auto const&, auto const&)
@@ -632,12 +640,14 @@ namespace winrt::Agentic_Browser::implementation
             GridSplitterBorder().PointerMoved({ this, &BrowserView::OnSplitterPointerMoved });
             GridSplitterBorder().PointerReleased({ this, &BrowserView::OnSplitterPointerReleased });
             GridSplitterBorder().PointerCaptureLost({ this, &BrowserView::OnSplitterPointerReleased });
+            StartGlow();
         }
         else
         {
             // Hide assistant panel
             AssistantColumn().Width(GridLengthHelper::FromValueAndType(0, GridUnitType::Pixel));
             GridSplitterBorder().Visibility(Visibility::Collapsed);
+            StopGlow();
         }
     }
 
@@ -832,4 +842,45 @@ namespace winrt::Agentic_Browser::implementation
     {
         m_newTabRequestedEvent(*this, L"edge://extensions");
     }
+
+    void BrowserView::DownloadsPage_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        m_newTabRequestedEvent(*this, L"edge://downloads");
+    }
+
+    void BrowserView::HistoryPage_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        m_newTabRequestedEvent(*this, L"edge://history");
+    }
+
+    void BrowserView::StartGlow()
+    {
+        auto visual = ElementCompositionPreview::GetElementVisual(GlowOverlay());
+        auto compositor = visual.Compositor();
+
+        auto animation = compositor.CreateScalarKeyFrameAnimation();
+        animation.InsertKeyFrame(1.0f, 1.0f);
+        animation.Duration(std::chrono::milliseconds(500));
+
+        visual.StartAnimation(L"Opacity", animation);
+    }
+
+    void BrowserView::StopGlow()
+    {
+        auto visual = ElementCompositionPreview::GetElementVisual(GlowOverlay());
+        auto compositor = visual.Compositor();
+
+        auto animation = compositor.CreateScalarKeyFrameAnimation();
+        animation.InsertKeyFrame(1.0f, 0.0f);
+        animation.Duration(std::chrono::milliseconds(300));
+
+        visual.StartAnimation(L"Opacity", animation);
+    }
+
+    void BrowserView::SetupGlowEffect()
+    {
+        auto visual = ElementCompositionPreview::GetElementVisual(GlowOverlay());
+        visual.Opacity(0.0f);
+    }
+
 }

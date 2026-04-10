@@ -69,6 +69,18 @@ namespace winrt::Agentic_Browser::implementation
             winrt::Windows::Foundation::IInspectable const& sender,
             winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
+        void DownloadsPage_Click(
+            winrt::Windows::Foundation::IInspectable const& sender,
+            winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+
+        void HistoryPage_Click(
+            winrt::Windows::Foundation::IInspectable const& sender,
+            winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+
+        void StartGlow();
+        void StopGlow();
+        void SetupGlowEffect();
+        Microsoft::UI::Composition::DropShadow m_shadow{ nullptr };
 
         // --- Event Registrations ---
 
