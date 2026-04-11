@@ -8,6 +8,9 @@ namespace Agentic_Browser
         void NavigateTo(String url);
         void Cleanup();
         Windows.Foundation.IAsyncOperation<Microsoft.UI.Xaml.Media.Imaging.BitmapImage> CapturePreviewAsync();
+        
+        void StartGlow();
+        void StopGlow();
 
         event Windows.Foundation.TypedEventHandler<BrowserView, String> UrlChanged;
         event Windows.Foundation.TypedEventHandler<BrowserView, String> TitleChanged;

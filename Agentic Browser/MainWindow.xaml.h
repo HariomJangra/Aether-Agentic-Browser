@@ -2,6 +2,7 @@
 
 #include "MainWindow.g.h"
 #include <map> 
+#include <winrt/Windows.Networking.Sockets.h>
 
 namespace winrt::Agentic_Browser::implementation
 {
@@ -28,10 +29,13 @@ namespace winrt::Agentic_Browser::implementation
             winrt::Windows::Foundation::IInspectable const& sender,
             winrt::Windows::Foundation::IInspectable const& e);
 
+        winrt::fire_and_forget InitializeAgentListener();
+
     private:
         std::map<Microsoft::UI::Xaml::Controls::TabViewItem,Microsoft::UI::Xaml::Media::Imaging::BitmapImage> m_tabPreviews;
 
         Microsoft::UI::Xaml::Controls::TabViewItem m_activeTab{ nullptr };
+        winrt::Windows::Networking::Sockets::StreamSocketListener m_agentListener{ nullptr };
     };
 }
 

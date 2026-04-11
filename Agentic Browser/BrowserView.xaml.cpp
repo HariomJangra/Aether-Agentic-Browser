@@ -64,10 +64,13 @@ namespace winrt::Agentic_Browser::implementation
                 {
                     if (auto core = self->WebView().CoreWebView2())
                     {
-                        if (self->m_isLoading)
+                        if (self->m_isLoading) {
                             core.Stop();
-                        else
+                            self->StopGlow();
+                        }
+                        else {
                             core.Reload();
+                        }
                     }
                 }
             });
@@ -639,15 +642,15 @@ namespace winrt::Agentic_Browser::implementation
             GridSplitterBorder().PointerPressed({ this, &BrowserView::OnSplitterPointerPressed });
             GridSplitterBorder().PointerMoved({ this, &BrowserView::OnSplitterPointerMoved });
             GridSplitterBorder().PointerReleased({ this, &BrowserView::OnSplitterPointerReleased });
-            GridSplitterBorder().PointerCaptureLost({ this, &BrowserView::OnSplitterPointerReleased });
-            StartGlow();
+            GridSplitterBorder().PointerCaptureLost({ this, &BrowserView::OnSplitterPointerReleased });     
+
         }
         else
         {
             // Hide assistant panel
             AssistantColumn().Width(GridLengthHelper::FromValueAndType(0, GridUnitType::Pixel));
-            GridSplitterBorder().Visibility(Visibility::Collapsed);
-            StopGlow();
+            GridSplitterBorder().Visibility(Visibility::Collapsed);   
+
         }
     }
 
@@ -883,4 +886,4 @@ namespace winrt::Agentic_Browser::implementation
         visual.Opacity(0.0f);
     }
 
-}
+    }

@@ -23,6 +23,9 @@ namespace winrt::Agentic_Browser::implementation
 
         // Create initial tab
         CreateNewTab(L"");
+        
+        // Start TCP listener
+        InitializeAgentListener();
     }
 
     //  New Tab button
@@ -181,6 +184,48 @@ namespace winrt::Agentic_Browser::implementation
             img.Source(it->second);
         else
             img.Source(nullptr);
+    }
+
+    winrt::fire_and_forget MainWindow::InitializeAgentListener()
+    {
+        using namespace winrt::Windows::Networking::Sockets;
+        using namespace winrt::Windows::Storage::Streams;
+
+        m_agentListener = StreamSocketListener();
+
+        m_agentListener.ConnectionReceived([this](StreamSocketListener sender, StreamSocketListenerConnectionReceivedEventArgs args) -> winrt::fire_and_forget
+            {
+                try
+                {
+                    DataReader reader(args.Socket().InputStream());
+                    reader.InputStreamOptions(InputStreamOptions::Partial);
+                    unsigned int bytesLoaded = co_await reader.LoadAsync(256);
+                    hstring message = reader.ReadString(bytesLoaded);
+
+                    // Marshal to UI Thread
+                    this->DispatcherQueue().TryEnqueue([this, message]()
+                        {
+                            if (!m_activeTab) return;
+                            auto browserView = m_activeTab.Content().try_as<Agentic_Browser::BrowserView>();
+                            if (!browserView) return;
+
+                            if (message == L"START") {
+                                browserView.StartGlow();
+                            }
+                            else if (message == L"STOP") {
+                                browserView.StopGlow();
+                            }
+                        });
+                }
+                catch (...) { /* Handle socket errors */ }
+            });
+
+        try {
+            co_await m_agentListener.BindServiceNameAsync(L"8080");
+        }
+        catch (...) {
+            // Port 8080 might be busy
+        }
     }
 
 }
